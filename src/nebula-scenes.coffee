@@ -11,7 +11,7 @@ Quintus.NebulaScenes = (Q) ->
     stage.insert(new Q.UI.Text(
       label: 'Nebula',
       color: 'white',
-      family: 'monospace'
+      family: 'ui'
       size: 56
       x: Q.width * (3 / 4),
       y: Q.height / 4,
@@ -22,7 +22,7 @@ Quintus.NebulaScenes = (Q) ->
         x: Q.width * (3 / 4),
         y: Q.height / 2
         fontColor: 'white',
-        font: '400 24px monospace',
+        font: '400 24px ui',
       , -> Q.stageScene('Game')
     ))
 
@@ -31,7 +31,7 @@ Quintus.NebulaScenes = (Q) ->
         x: Q.width * (3 / 4),
         y: Q.height / (4 / 3)
         fontColor: 'white',
-        font: '400 24px monospace',
+        font: '400 24px ui',
       , -> Q.stageScene(null)
     ))
 
