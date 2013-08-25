@@ -4,9 +4,10 @@ Quintus.NebulaScenes = (Q) ->
     stage.insert(new Q.Background())
 
   Q.scene 'Menu', (stage) ->
+
     stage.insert(new Q.Background())
 
-    stage.insert(new Q.Star()) for [1..250]
+    stage.insert(new Q.Star()) for [1..(Q.width * Q.height / 10000)]
 
     stage.insert(new Q.UI.Text(
       label: 'Nebula',
