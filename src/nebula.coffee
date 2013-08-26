@@ -7,8 +7,10 @@ Q = Quintus()                                               # create a new engin
 
 # Q.debug = true
 # Q.debugFill = true
-Q.load([ 'spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3' ], ->
-  Q.stageScene('Menu')
-)
+Q.load [ 'spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3' ], ->
+    Q.stageScene('Menu')
+  , progressCallback: (loaded, total) ->
+    percent_loaded = Math.floor(loaded / total * 100)
+    document.getElementById('loading_progress').style.width = percent_loaded + '%'
 
 window.Q = Q

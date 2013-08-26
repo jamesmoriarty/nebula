@@ -14,10 +14,33 @@
       font-weight: normal;
       font-style: normal;
     }
-    html { font-family: 'ubuntu' }
-    </style>
+
+    html { font-family: 'ui' }
+
+    #loading {
+      margin: 0 auto;
+    }
+
+    #loading_container {
+      width: 100%;
+    }
+
+    #loading_progress {
+      width: 0;
+      background-color: black;
+      position: absolute;
+      height: 0.25em;
+      top: 0;
+      left: 0;
+    }
+  </style>
   </head>
-   <body>
-    <script src='js/nebula.js'></script>
+  <body>
+    <div id='loading'>
+      <div id='loading_container'>
+        <div id='loading_progress'></div>
+     </div>
+   </div>
+   <script src='js/nebula.js'></script>
    </body>
 </html>
