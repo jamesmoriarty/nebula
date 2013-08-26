@@ -1,2 +1,3 @@
 #!/bin/sh -v
-coffee -o js/ -cw src/
+coffee --join nebula.js -o js/ -cw src/
+
