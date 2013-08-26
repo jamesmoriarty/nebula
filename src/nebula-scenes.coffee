@@ -1,7 +1,6 @@
 Quintus.NebulaScenes = (Q) ->
 
   Q.scene 'Game', (stage) ->
-    stage.insert(new Q.Background())
 
   Q.scene 'Menu', (stage) ->
     color = 'white'
@@ -35,6 +34,10 @@ Quintus.NebulaScenes = (Q) ->
         y: Q.height / (4 / 3)
         fontColor: color,
         font: '400 24px ui',
-      , -> Q.stageScene(null)
+      , ->
+        Q.audio.stop()
+        Q.stageScene(null)
     ))
+
+    Q.audio.play('menu.mp3', loop: true)
 
