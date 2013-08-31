@@ -7,6 +7,7 @@ Run
 ---
 
 ```
+npm install
 make run
 ```
 
