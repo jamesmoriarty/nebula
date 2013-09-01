@@ -1,4 +1,4 @@
-Q.Sprite.extend 'Background',
+Q.Sprite.extend 'MenuBackground',
   init: (p) ->
     @._super p,
       x: 0,
