@@ -1,11 +1,11 @@
 Q.Sprite.extend 'MenuStar',
   init: (p) ->
     @._super p,
-      x: Math.random() * Q.width,
-      y: Math.random() * Q.height,
+      x: Math.random() * Q.width
+      y: Math.random() * Q.height
       scale: Math.random()
-      asset: 'star.png',
-      type: 0
+      asset: 'star.png'
+      type: Q.SPRITE_NONE
 
   update: (dt) ->
     if @.p.y > Q.height
