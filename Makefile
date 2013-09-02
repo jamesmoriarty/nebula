@@ -1,5 +1,5 @@
 compile:
-	# for file in audio/*.mp3; do `ffmpeg -i $file /audio/$(basename ${file} .mp3).ogg`;done
+	# for file in audio/*.mp3; do `ffmpeg -i $file audio/$(basename ${file} .mp3).ogg`;done
 	coffee --join nebula.js -o js/ -cw src/ &
 server:
 	# ruby -run -e httpd . -p3000
