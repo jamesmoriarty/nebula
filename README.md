@@ -1,7 +1,7 @@
 nebula-js
 =========
 
-A Javascript port of a game I wrote in Ruby. You can play it [here](http://jamesmoriarty.github.io/nebula-js/index.html).
+A _work in progress_ Javascript port of a game I wrote in Ruby. You can play it [here](http://jamesmoriarty.github.io/nebula-js/index.html).
 
 Run
 ---
