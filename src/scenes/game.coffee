@@ -1,6 +1,8 @@
 Q.scene 'Game', (stage) ->
 
-  player = new Q.Player x: Q.width / 2, y: Q.height / 2
+  x = Q.center().x
+  y = Q.center().y
+  player = new Q.Player x: x, y: y
   stage.insert new Q.Star player: player for [1..(Q.width * Q.height / 10000)]
   stage.insert player
 

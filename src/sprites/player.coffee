@@ -21,3 +21,11 @@
     right: ->
       @.p.angle += 10
 
+    update: (dt) ->
+      #@stage.insert new Q.Particle
+      #  x:  @p.x - Q.offsetX(@.p.angle, 32) * 32
+      #  y:  @p.y - Q.offsetY(@.p.angle, 32) * 32
+      #  vx: @p.vx
+      #  vy: @p.vy
+      @._super dt
+
