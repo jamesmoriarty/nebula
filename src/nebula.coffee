@@ -16,3 +16,4 @@ Q.load [ 'spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp
     document.getElementById('loading_progress').style.width = percent_loaded + '%'
 
 window.Q = Q
+
