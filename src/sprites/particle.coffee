@@ -3,16 +3,21 @@ Q.Sprite.extend 'Particle',
     @_super p,
       asset: 'particle.png'
       type: Q.SPRITE_NONE
+      gravity: 0
+      z: 5
+      opacity: 0.5
+      scale: 0.5
+
     @add('2d')
 
-  update: (dt) ->
-    #@scale *= 0.999999999
-    @_super dt
+    @.on 'step', ->
+      if @p.scale >= 0
+        @p.scale -= 0.01
+      else
+        @.destroy()
 
   draw: (ctx) ->
     ctx.globalCompositeOperation = 'lighter'
-    if @p.sheet
-      @sheet().draw ctx, -@p.cx, -@p.cy, @p.frame
-    else if(@p.asset)
-      ctx.drawImage Q.asset(@p.asset), -@p.cx, -@p.cy
+
+    @_super(ctx)
 
