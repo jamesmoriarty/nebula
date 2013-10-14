@@ -148,20 +148,24 @@
     init: function(p) {
       this._super(p, {
         asset: 'particle.png',
-        type: Q.SPRITE_NONE
+        type: Q.SPRITE_NONE,
+        gravity: 0,
+        z: 5,
+        opacity: 0.5,
+        scale: 0.5
       });
-      return this.add('2d');
-    },
-    update: function(dt) {
-      return this._super(dt);
+      this.add('2d');
+      return this.on('step', function() {
+        if (this.p.scale >= 0) {
+          return this.p.scale -= 0.01;
+        } else {
+          return this.destroy();
+        }
+      });
     },
     draw: function(ctx) {
       ctx.globalCompositeOperation = 'lighter';
-      if (this.p.sheet) {
-        return this.sheet().draw(ctx, -this.p.cx, -this.p.cy, this.p.frame);
-      } else if (this.p.asset) {
-        return ctx.drawImage(Q.asset(this.p.asset), -this.p.cx, -this.p.cy);
-      }
+      return this._super(ctx);
     }
   });
 
@@ -169,7 +173,8 @@
     init: function(p) {
       this._super(p, {
         asset: 'spaceship.png',
-        gravity: 0
+        gravity: 0,
+        z: 10
       });
       this.add('2d');
       Q.input.on('up', this, 'up');
@@ -187,6 +192,15 @@
       return this.p.angle += 10;
     },
     update: function(dt) {
+      if (Q.inputs['up']) {
+        this.stage.insert(new Q.Particle({
+          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy)
+        }));
+      } else {
+        this.p.vx *= 0.99;
+        this.p.vy *= 0.99;
+      }
       return this._super(dt);
     }
   });
