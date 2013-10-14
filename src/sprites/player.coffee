@@ -4,6 +4,7 @@
       @_super p,
         asset: 'spaceship.png'
         gravity: 0
+        z: 10
 
       @add('2d')
 
@@ -22,10 +23,13 @@
       @p.angle += 10
 
     update: (dt) ->
-      #@stage.insert new Q.Particle
-      #  x:  @p.x - Q.offsetX(@p.angle, 32) * 32
-      #  y:  @p.y - Q.offsetY(@p.angle, 32) * 32
-      #  vx: @p.vx
-      #  vy: @p.vy
-      @_super dt
+      if Q.inputs['up']
+        @stage.insert new Q.Particle
+          x:  @p.x - Q.offsetX(@p.angle, @p.cx)
+          y:  @p.y - Q.offsetY(@p.angle, @p.cy)
+      else
+        @p.vx *= 0.99
+        @p.vy *= 0.99
+
+      @_super(dt)
 
