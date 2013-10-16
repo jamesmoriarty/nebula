@@ -8,7 +8,7 @@ Q.Sprite.extend 'Star',
       asset: 'star.png'
       type: Q.SPRITE_NONE
 
-  update: (dt) ->
+  step: (dt) ->
     @p.vx = Math.pow(@p.player.p.vx, Q.width)
     @p.vy = Math.pow(@p.player.p.vy, Q.width)
     if Math.abs(@p.x - @p.player.p.x) > Q.width or Math.abs(@p.y - @p.player.p.y) > Q.height

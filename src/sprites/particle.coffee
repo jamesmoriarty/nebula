@@ -3,7 +3,6 @@ Q.Sprite.extend 'Particle',
     @_super p,
       asset: 'particle.png'
       type: Q.SPRITE_NONE
-      gravity: 0
       z: 5
       opacity: 0.5
       scale: 0.5
@@ -11,6 +10,8 @@ Q.Sprite.extend 'Particle',
     @add('2d')
 
     @.on 'step', ->
+      @p.vx *= 0.99
+      @p.vy *= 0.99
       if @p.scale >= 0
         @p.scale -= 0.01
       else
