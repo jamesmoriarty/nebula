@@ -7,7 +7,7 @@ Q.Sprite.extend 'MenuStar',
       asset: 'star.png'
       type: Q.SPRITE_NONE
 
-  update: (dt) ->
+  step: (dt) ->
     if @p.y > Q.height
       @p.y = 0
       @p.x = Math.random() * Q.width

@@ -5,11 +5,13 @@ Q = Quintus()                                                           # create
   .touch()                                                              # add in touch support (for the UI)
   .enableSound()
 
-Q.clearColor = "#000";
+Q.gravityY = 0
+Q.gravityX = 0
+Q.clearColor = "#000"
 #Q.debug = true
 #Q.debugFill = true
 
-Q.load [ 'spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3' ], ->
+Q.load [ 'spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3', 'blasterShot.mp3' ], ->
     Q.stageScene('Menu')
   , progressCallback: (loaded, total) ->
     percent_loaded = Math.floor(loaded / total * 100)
