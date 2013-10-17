@@ -9,11 +9,11 @@ Q.Sprite.extend 'Particle',
 
     @add('2d')
 
-    @.on 'step', ->
-      @p.vx *= 0.99
-      @p.vy *= 0.99
+    @.on 'step', (dt) ->
+      @p.vx *= (1 - dt)
+      @p.vy *= (1 - dt)
       if @p.scale >= 0
-        @p.scale -= 0.01
+        @p.scale -= dt / 2
       else
         @.destroy()
 
