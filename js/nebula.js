@@ -10,48 +10,6 @@
     return this[1];
   };
 
-  if (!Object.prototype.watch) {
-    Object.defineProperty(Object.prototype, "watch", {
-      enumerable: false,
-      configurable: true,
-      writable: false,
-      value: function(prop, handler) {
-        var getter, newval, oldval, setter;
-        oldval = this[prop];
-        newval = oldval;
-        getter = function() {
-          return newval;
-        };
-        setter = function(val) {
-          oldval = newval;
-          return newval = handler.call(this, prop, oldval, val);
-        };
-        if (delete this[prop]) {
-          return Object.defineProperty(this, prop, {
-            get: getter,
-            set: setter,
-            enumerable: true,
-            configurable: true
-          });
-        }
-      }
-    });
-  }
-
-  if (!Object.prototype.unwatch) {
-    Object.defineProperty(Object.prototype, "unwatch", {
-      enumerable: false,
-      configurable: true,
-      writable: false,
-      value: function(prop) {
-        var val;
-        val = this[prop];
-        delete this[prop];
-        return this[prop] = val;
-      }
-    });
-  }
-
   Quintus.Math = function(Q) {
     Q.offsetX = function(angle, radius) {
       return Math.sin(angle / 180 * Math.PI) * radius;
