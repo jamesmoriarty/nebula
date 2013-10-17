@@ -10,6 +10,48 @@
     return this[1];
   };
 
+  if (!Object.prototype.watch) {
+    Object.defineProperty(Object.prototype, "watch", {
+      enumerable: false,
+      configurable: true,
+      writable: false,
+      value: function(prop, handler) {
+        var getter, newval, oldval, setter;
+        oldval = this[prop];
+        newval = oldval;
+        getter = function() {
+          return newval;
+        };
+        setter = function(val) {
+          oldval = newval;
+          return newval = handler.call(this, prop, oldval, val);
+        };
+        if (delete this[prop]) {
+          return Object.defineProperty(this, prop, {
+            get: getter,
+            set: setter,
+            enumerable: true,
+            configurable: true
+          });
+        }
+      }
+    });
+  }
+
+  if (!Object.prototype.unwatch) {
+    Object.defineProperty(Object.prototype, "unwatch", {
+      enumerable: false,
+      configurable: true,
+      writable: false,
+      value: function(prop) {
+        var val;
+        val = this[prop];
+        delete this[prop];
+        return this[prop] = val;
+      }
+    });
+  }
+
   Quintus.Math = function(Q) {
     Q.offsetX = function(angle, radius) {
       return Math.sin(angle / 180 * Math.PI) * radius;
@@ -115,146 +157,6 @@
     });
   });
 
-  Q.Sprite.extend('Particle', {
-    init: function(p) {
-      this._super(p, {
-        asset: 'particle.png',
-        type: Q.SPRITE_NONE,
-        z: 5,
-        opacity: 0.5,
-        scale: 0.5
-      });
-      this.add('2d');
-      return this.on('step', function() {
-        this.p.vx *= 0.99;
-        this.p.vy *= 0.99;
-        if (this.p.scale >= 0) {
-          return this.p.scale -= 0.01;
-        } else {
-          return this.destroy();
-        }
-      });
-    },
-    draw: function(ctx) {
-      ctx.globalCompositeOperation = 'lighter';
-      return this._super(ctx);
-    }
-  });
-
-  Q.Sprite.extend('Player', {
-    init: function(p) {
-      this._super(p, {
-        asset: 'spaceship.png',
-        z: 10
-      });
-      this.add('2d');
-      Q.input.on('up', this, 'up');
-      Q.input.on('left', this, 'left');
-      Q.input.on('right', this, 'right');
-      return Q.input.on('fire', this, 'fire');
-    },
-    up: function() {
-      this.p.vx += Q.offsetX(this.p.angle, 10);
-      return this.p.vy += Q.offsetY(this.p.angle, 10);
-    },
-    left: function() {
-      return this.p.angle -= 10;
-    },
-    right: function() {
-      return this.p.angle += 10;
-    },
-    fire: function() {
-      var accuracy, angle, velocity;
-      velocity = 500;
-      accuracy = Math.floor((Math.random() * 5) - 5);
-      angle = this.p.angle + accuracy;
-      this.stage.insert(new Q.BlasterShot({
-        x: this.p.x + Q.offsetX(this.p.angle, this.p.cx * 2),
-        y: this.p.y + Q.offsetY(this.p.angle, this.p.cy * 2),
-        vx: this.p.vx + Q.offsetX(angle, velocity),
-        vy: this.p.vy + Q.offsetY(angle, velocity),
-        angle: angle
-      }));
-      return Q.audio.play('blasterShot.mp3');
-    },
-    step: function(dt) {
-      if (Q.inputs['up']) {
-        return this.stage.insert(new Q.Particle({
-          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
-          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
-          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 5)),
-          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 5))
-        }));
-      } else {
-        this.p.vx *= 0.99;
-        return this.p.vy *= 0.99;
-      }
-    }
-  });
-
-  Q.Sprite.extend('Star', {
-    init: function(p) {
-      return this._super(p, {
-        player: p.player,
-        x: Math.random() * Q.width,
-        y: Math.random() * Q.height,
-        scale: Math.random(),
-        asset: 'star.png',
-        type: Q.SPRITE_NONE
-      });
-    },
-    step: function(dt) {
-      this.p.vx = Math.pow(this.p.player.p.vx, Q.width);
-      this.p.vy = Math.pow(this.p.player.p.vy, Q.width);
-      if (Math.abs(this.p.x - this.p.player.p.x) > Q.width || Math.abs(this.p.y - this.p.player.p.y) > Q.height) {
-        this.p.x = Q.stage().viewport.x + (Math.random() * Q.width);
-        return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
-      }
-    }
-  });
-
-  if (!Object.prototype.watch) {
-    Object.defineProperty(Object.prototype, "watch", {
-      enumerable: false,
-      configurable: true,
-      writable: false,
-      value: function(prop, handler) {
-        var getter, newval, oldval, setter;
-        oldval = this[prop];
-        newval = oldval;
-        getter = function() {
-          return newval;
-        };
-        setter = function(val) {
-          oldval = newval;
-          return newval = handler.call(this, prop, oldval, val);
-        };
-        if (delete this[prop]) {
-          return Object.defineProperty(this, prop, {
-            get: getter,
-            set: setter,
-            enumerable: true,
-            configurable: true
-          });
-        }
-      }
-    });
-  }
-
-  if (!Object.prototype.unwatch) {
-    Object.defineProperty(Object.prototype, "unwatch", {
-      enumerable: false,
-      configurable: true,
-      writable: false,
-      value: function(prop) {
-        var val;
-        val = this[prop];
-        delete this[prop];
-        return this[prop] = val;
-      }
-    });
-  }
-
   Q.Sprite.extend('MenuBackground', {
     init: function(p) {
       return this._super(p, {
@@ -286,6 +188,133 @@
       }
       return this.p.y += dt * Math.pow(1000, this.p.scale);
     }
+  });
+
+  Q.Sprite.extend('Particle', {
+    init: function(p) {
+      this._super(p, {
+        asset: 'particle.png',
+        type: Q.SPRITE_NONE,
+        z: 5,
+        opacity: 0.5,
+        scale: 0.5
+      });
+      this.add('2d');
+      return this.on('step', function(dt) {
+        this.p.vx *= 1 - dt;
+        this.p.vy *= 1 - dt;
+        if (this.p.scale >= 0) {
+          return this.p.scale -= dt / 2;
+        } else {
+          return this.destroy();
+        }
+      });
+    },
+    draw: function(ctx) {
+      ctx.globalCompositeOperation = 'lighter';
+      return this._super(ctx);
+    }
+  });
+
+  Q.Sprite.extend('Player', {
+    init: function(p) {
+      this._super(p, {
+        asset: 'spaceship.png',
+        z: 10
+      });
+      this.weapon = new Q.Blaster;
+      this.add('2d');
+      this.on('step', 'trail');
+      this.on('step', 'friction');
+      Q.input.on('fire', this, 'fire');
+      Q.input.on('up', this, 'up');
+      Q.input.on('left', this, 'left');
+      return Q.input.on('right', this, 'right');
+    },
+    fire: function() {
+      return this.weapon.tryFire(this);
+    },
+    up: function() {
+      this.p.vx += Q.offsetX(this.p.angle, 10);
+      return this.p.vy += Q.offsetY(this.p.angle, 10);
+    },
+    left: function() {
+      return this.p.angle -= 10;
+    },
+    right: function() {
+      return this.p.angle += 10;
+    },
+    trail: function(dt) {
+      if (Q.inputs['up']) {
+        return this.stage.insert(new Q.Particle({
+          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
+          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 5)),
+          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 5))
+        }));
+      }
+    },
+    friction: function(dt) {
+      if (!Q.inputs['up']) {
+        this.p.vx *= 1 - dt;
+        return this.p.vy *= 1 - dt;
+      }
+    }
+  });
+
+  Q.Sprite.extend('Star', {
+    init: function(p) {
+      return this._super(p, {
+        player: p.player,
+        x: Math.random() * Q.width,
+        y: Math.random() * Q.height,
+        scale: Math.random(),
+        asset: 'star.png',
+        type: Q.SPRITE_NONE
+      });
+    },
+    step: function(dt) {
+      this.p.vx = Math.pow(this.p.player.p.vx, Q.width);
+      this.p.vy = Math.pow(this.p.player.p.vy, Q.width);
+      if (Math.abs(this.p.x - this.p.player.p.x) > Q.width || Math.abs(this.p.y - this.p.player.p.y) > Q.height) {
+        this.p.x = Q.stage().viewport.x + (Math.random() * Q.width);
+        return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
+      }
+    }
+  });
+
+  Q.Weapon = Q.GameObject.extend("Weapon", {
+    init: function() {
+      return this.lastFired = 0;
+    },
+    tryFire: function(from) {
+      var now;
+      now = new Date().getTime();
+      if (now > this.lastFired + Q[this.className].coolDown) {
+        this.fire(from);
+        return this.lastFired = now;
+      }
+    }
+  });
+
+  Q.Weapon.extend("Blaster", {
+    fire: function(from) {
+      var accuracy, angle, velocity;
+      velocity = Q[this.className].velocity;
+      accuracy = Math.floor((Math.random() * 5) - 5);
+      angle = from.p.angle + accuracy;
+      from.stage.insert(new Q.BlasterShot({
+        x: from.p.x + Q.offsetX(from.p.angle, from.p.cx * 2),
+        y: from.p.y + Q.offsetY(from.p.angle, from.p.cy * 2),
+        vx: from.p.vx + Q.offsetX(angle, velocity),
+        vy: from.p.vy + Q.offsetY(angle, velocity),
+        angle: angle
+      }));
+      return Q.audio.play('blasterShot.mp3');
+    }
+  }, {
+    coolDown: 200,
+    velocity: 500
   });
 
   Q.Sprite.extend('BlasterShot', {
