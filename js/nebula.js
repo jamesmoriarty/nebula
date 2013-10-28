@@ -53,18 +53,19 @@
 
   Q.scene('Game', function(stage) {
     var player, x, y, _i, _ref;
+    stage.insert(new Q.MenuBackground);
     x = Q.center().x;
     y = Q.center().y;
     player = new Q.Player({
       x: x,
       y: y
     });
-    for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
+    stage.insert(player);
+    for (_i = 1, _ref = Q.width * Q.height / 5000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
       stage.insert(new Q.Star({
         player: player
       }));
     }
-    stage.insert(player);
     stage.on('destroy', function() {
       return player.destroy;
     });
@@ -125,7 +126,9 @@
       });
     },
     draw: function(ctx) {
-      return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, 0, 0, Q.width, Q.height);
+      if (this.stage.viewport) {
+        return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, this.stage.viewport.centerX - Q.width / 2, this.stage.viewport.centerY - Q.height / 2, Q.width, Q.height);
+      }
     }
   });
 
@@ -222,18 +225,19 @@
 
   Q.Sprite.extend('Star', {
     init: function(p) {
-      return this._super(p, {
+      this._super(p, {
         player: p.player,
         x: Math.random() * Q.width,
         y: Math.random() * Q.height,
-        scale: Math.random(),
         asset: 'star.png',
+        scale: Math.random(),
         type: Q.SPRITE_NONE
       });
+      return this.add('2d');
     },
     step: function(dt) {
-      this.p.vx = Math.pow(this.p.player.p.vx, Q.width);
-      this.p.vy = Math.pow(this.p.player.p.vy, Q.width);
+      this.p.vx = this.p.player.p.vx * this.p.scale;
+      this.p.vy = this.p.player.p.vy * this.p.scale;
       if (Math.abs(this.p.x - this.p.player.p.x) > Q.width || Math.abs(this.p.y - this.p.player.p.y) > Q.height) {
         this.p.x = Q.stage().viewport.x + (Math.random() * Q.width);
         return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
@@ -241,7 +245,7 @@
     }
   });
 
-  Q.Weapon = Q.GameObject.extend("Weapon", {
+  Q.Weapon = Q.Class.extend("Weapon", {
     init: function() {
       return this.lastFired = 0;
     },
