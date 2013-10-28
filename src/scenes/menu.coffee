@@ -2,7 +2,7 @@ Q.scene 'Menu', (stage) ->
   color = 'white'
   x     = Q.width * (3 / 4)
 
-  stage.insert new Q.MenuBackground
+  stage.insert new Q.Background
 
   stage.insert new Q.MenuStar for [1..(Q.width * Q.height / 10000)]
 
