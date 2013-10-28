@@ -1,4 +1,4 @@
-Q.Weapon = Q.GameObject.extend "Weapon",
+Q.Weapon = Q.Class.extend "Weapon",
   init: ->
     @lastFired = 0
 
