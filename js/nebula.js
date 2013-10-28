@@ -53,7 +53,7 @@
 
   Q.scene('Game', function(stage) {
     var player, x, y, _i, _ref;
-    stage.insert(new Q.MenuBackground);
+    stage.insert(new Q.Background);
     x = Q.center().x;
     y = Q.center().y;
     player = new Q.Player({
@@ -80,7 +80,7 @@
     var color, x, _i, _ref;
     color = 'white';
     x = Q.width * (3 / 4);
-    stage.insert(new Q.MenuBackground);
+    stage.insert(new Q.Background);
     for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
       stage.insert(new Q.MenuStar);
     }
@@ -116,7 +116,7 @@
     });
   });
 
-  Q.Sprite.extend('MenuBackground', {
+  Q.Sprite.extend('Background', {
     init: function(p) {
       return this._super(p, {
         x: 0,
@@ -126,9 +126,15 @@
       });
     },
     draw: function(ctx) {
+      var offsetX, offsetY;
       if (this.stage.viewport) {
-        return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, this.stage.viewport.centerX - Q.width / 2, this.stage.viewport.centerY - Q.height / 2, Q.width, Q.height);
+        offsetX = this.stage.viewport.centerX - Q.width / 2;
+        offsetY = this.stage.viewport.centerY - Q.height / 2;
+      } else {
+        offsetX = 0;
+        offsetY = 0;
       }
+      return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, offsetX, offsetY, Q.width, Q.height);
     }
   });
 
@@ -147,7 +153,7 @@
         this.p.y = 0;
         this.p.x = Math.random() * Q.width;
       }
-      return this.p.y += dt * Math.pow(1000, this.p.scale);
+      return this.p.y += dt * Math.pow(100, this.p.scale);
     }
   });
 
