@@ -1,5 +1,5 @@
 Q.scene 'Game', (stage) ->
-  stage.insert new Q.MenuBackground
+  stage.insert new Q.Background
 
   x = Q.center().x
   y = Q.center().y

@@ -11,5 +11,5 @@ Q.Sprite.extend 'MenuStar',
     if @p.y > Q.height
       @p.y = 0
       @p.x = Math.random() * Q.width
-    @p.y += dt *  Math.pow(1000, @p.scale)
+    @p.y += dt *  Math.pow(100, @p.scale)
 
