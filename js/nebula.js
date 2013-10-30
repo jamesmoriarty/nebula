@@ -51,6 +51,14 @@
 
   window.Q = Q;
 
+  document.addEventListener("click", function() {
+    var e;
+    e = document.getElementById("quintus");
+    if (e.webkitRequestFullScreen) {
+      return e.webkitRequestFullScreen();
+    }
+  });
+
   Q.scene('Game', function(stage) {
     var player, _i, _ref;
     player = new Q.Player({
@@ -196,42 +204,40 @@
       });
       this.weapon = new Q.Blaster;
       this.add('2d');
-      this.on('step', 'trail');
-      this.on('step', 'friction');
-      Q.input.on('fire', this, 'fire');
-      Q.input.on('up', this, 'up');
-      Q.input.on('action', this, 'up');
-      Q.input.on('left', this, 'left');
-      return Q.input.on('right', this, 'right');
+      return Q.input.on('fire', this, 'fire');
+    },
+    step: function(dt) {
+      if (Q.inputs['up'] || Q.inputs['action']) {
+        this.accelerate(dt);
+      } else {
+        this.friction(dt);
+      }
+      if (Q.inputs['left']) {
+        this.turn(dt, -100);
+      }
+      if (Q.inputs['right']) {
+        return this.turn(dt, 100);
+      }
     },
     fire: function() {
       return this.weapon.tryFire(this);
     },
-    up: function() {
-      this.p.vx += Q.offsetX(this.p.angle, 10);
-      return this.p.vy += Q.offsetY(this.p.angle, 10);
+    accelerate: function(dt) {
+      this.p.vx += Q.offsetX(this.p.angle, 100) * dt;
+      this.p.vy += Q.offsetY(this.p.angle, 100) * dt;
+      return this.stage.insert(new Q.Particle({
+        x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+        y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
+        vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 5)),
+        vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 5))
+      }));
     },
-    left: function() {
-      return this.p.angle -= 10;
-    },
-    right: function() {
-      return this.p.angle += 10;
-    },
-    trail: function(dt) {
-      if (Q.inputs['up'] || Q.inputs['action']) {
-        return this.stage.insert(new Q.Particle({
-          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
-          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
-          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 5)),
-          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 5))
-        }));
-      }
+    turn: function(dt, degree) {
+      return this.p.angle += degree * dt;
     },
     friction: function(dt) {
-      if (!Q.inputs['up']) {
-        this.p.vx *= 1 - dt;
-        return this.p.vy *= 1 - dt;
-      }
+      this.p.vx *= 1 - dt;
+      return this.p.vy *= 1 - dt;
     }
   });
 
