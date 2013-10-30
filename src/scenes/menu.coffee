@@ -2,7 +2,7 @@ Q.scene 'Menu', (stage) ->
   color = 'white'
   x     = Q.width * (3 / 4)
 
-  stage.insert new Q.Background
+  stage.insert new Q.Background target: null
 
   stage.insert new Q.MenuStar for [1..(Q.width * Q.height / 10000)]
 
@@ -32,5 +32,5 @@ Q.scene 'Menu', (stage) ->
       Q.audio.stop
       Q.stageScene null
 
-  Q.audio.play 'menu.mp3', loop: true
+  # Q.audio.play 'menu.mp3', loop: true
 
