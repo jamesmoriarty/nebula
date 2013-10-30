@@ -52,20 +52,20 @@
   window.Q = Q;
 
   Q.scene('Game', function(stage) {
-    var player, x, y, _i, _ref;
-    stage.insert(new Q.Background);
-    x = Q.center().x;
-    y = Q.center().y;
+    var player, _i, _ref;
     player = new Q.Player({
-      x: x,
-      y: y
+      x: Q.center().x,
+      y: Q.center().y
     });
-    stage.insert(player);
+    stage.insert(new Q.Background({
+      target: player
+    }));
     for (_i = 1, _ref = Q.width * Q.height / 5000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
       stage.insert(new Q.Star({
-        player: player
+        target: player
       }));
     }
+    stage.insert(player);
     stage.on('destroy', function() {
       return player.destroy;
     });
@@ -80,7 +80,9 @@
     var color, x, _i, _ref;
     color = 'white';
     x = Q.width * (3 / 4);
-    stage.insert(new Q.Background);
+    stage.insert(new Q.Background({
+      target: null
+    }));
     for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
       stage.insert(new Q.MenuStar);
     }
@@ -101,7 +103,7 @@
     }, function() {
       return Q.stageScene('Game');
     }));
-    stage.insert(new Q.UI.Button({
+    return stage.insert(new Q.UI.Button({
       label: 'Quit',
       x: x,
       y: Q.height / (4 / 3),
@@ -111,20 +113,19 @@
       Q.audio.stop;
       return Q.stageScene(null);
     }));
-    return Q.audio.play('menu.mp3', {
-      loop: true
-    });
   });
 
   Q.Sprite.extend('Background', {
     init: function(p) {
       return this._super(p, {
+        target: p.target,
         x: 0,
         y: 0,
         asset: 'background.png',
         type: Q.SPRITE_NONE
       });
     },
+    drawOffset: 200,
     draw: function(ctx) {
       var offsetX, offsetY;
       if (this.stage.viewport) {
@@ -134,7 +135,11 @@
         offsetX = 0;
         offsetY = 0;
       }
-      return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, offsetX, offsetY, Q.width, Q.height);
+      if (this.p.target) {
+        offsetX += -this.p.target.p.vx / 10;
+        offsetY += -this.p.target.p.vy / 10;
+      }
+      return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, offsetX - this.drawOffset, offsetY - this.drawOffset, Q.width + this.drawOffset * 2, Q.height + this.drawOffset * 2);
     }
   });
 
@@ -195,6 +200,7 @@
       this.on('step', 'friction');
       Q.input.on('fire', this, 'fire');
       Q.input.on('up', this, 'up');
+      Q.input.on('action', this, 'up');
       Q.input.on('left', this, 'left');
       return Q.input.on('right', this, 'right');
     },
@@ -212,7 +218,7 @@
       return this.p.angle += 10;
     },
     trail: function(dt) {
-      if (Q.inputs['up']) {
+      if (Q.inputs['up'] || Q.inputs['action']) {
         return this.stage.insert(new Q.Particle({
           x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
           y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
@@ -232,7 +238,7 @@
   Q.Sprite.extend('Star', {
     init: function(p) {
       this._super(p, {
-        player: p.player,
+        target: p.target,
         x: Math.random() * Q.width,
         y: Math.random() * Q.height,
         asset: 'star.png',
@@ -242,9 +248,9 @@
       return this.add('2d');
     },
     step: function(dt) {
-      this.p.vx = this.p.player.p.vx * this.p.scale;
-      this.p.vy = this.p.player.p.vy * this.p.scale;
-      if (Math.abs(this.p.x - this.p.player.p.x) > Q.width || Math.abs(this.p.y - this.p.player.p.y) > Q.height) {
+      this.p.vx = this.p.target.p.vx * (this.p.scale / -1);
+      this.p.vy = this.p.target.p.vy * (this.p.scale / -1);
+      if (Math.abs(this.p.x - this.p.target.p.x) > Q.width || Math.abs(this.p.y - this.p.target.p.y) > Q.height) {
         this.p.x = Q.stage().viewport.x + (Math.random() * Q.width);
         return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
       }
@@ -281,7 +287,7 @@
       return Q.audio.play('blasterShot.mp3');
     }
   }, {
-    coolDown: 200,
+    coolDown: 100,
     velocity: 500
   });
 
