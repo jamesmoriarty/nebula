@@ -39,7 +39,7 @@
 
   Q.clearColor = "#000";
 
-  Q.load(['spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3', 'blasterShot.mp3'], function() {
+  Q.load(['ship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -196,14 +196,9 @@
     }
   });
 
-  Q.Sprite.extend('Player', {
+  Q.Ship.extend('Player', {
     init: function(p) {
-      this._super(p, {
-        asset: 'spaceship.png',
-        z: 10
-      });
-      this.weapon = new Q.Blaster;
-      this.add('2d');
+      this._super(p);
       return Q.input.on('fire', this, 'fire');
     },
     step: function(dt) {
@@ -218,26 +213,6 @@
       if (Q.inputs['right']) {
         return this.turn(dt, 100);
       }
-    },
-    fire: function() {
-      return this.weapon.tryFire(this);
-    },
-    accelerate: function(dt) {
-      this.p.vx += Q.offsetX(this.p.angle, 100) * dt;
-      this.p.vy += Q.offsetY(this.p.angle, 100) * dt;
-      return this.stage.insert(new Q.Particle({
-        x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
-        y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
-        vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 5)),
-        vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 5))
-      }));
-    },
-    turn: function(dt, degree) {
-      return this.p.angle += degree * dt;
-    },
-    friction: function(dt) {
-      this.p.vx *= 1 - dt;
-      return this.p.vy *= 1 - dt;
     }
   });
 
@@ -260,6 +235,37 @@
         this.p.x = Q.stage().viewport.x + (Math.random() * Q.width);
         return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
       }
+    }
+  });
+
+  Q.Ship = Q.Sprite.extend('Ship', {
+    init: function(p) {
+      this._super(p, {
+        asset: 'ship.png',
+        z: 10
+      });
+      this.weapon = new Q.Blaster;
+      return this.add('2d');
+    },
+    fire: function() {
+      return this.weapon.tryFire(this);
+    },
+    accelerate: function(dt) {
+      this.p.vx += Q.offsetX(this.p.angle, 100) * dt;
+      this.p.vy += Q.offsetY(this.p.angle, 100) * dt;
+      return this.stage.insert(new Q.Particle({
+        x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+        y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
+        vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 5)),
+        vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 5))
+      }));
+    },
+    turn: function(dt, degree) {
+      return this.p.angle += degree * dt;
+    },
+    friction: function(dt) {
+      this.p.vx *= 1 - dt;
+      return this.p.vy *= 1 - dt;
     }
   });
 
