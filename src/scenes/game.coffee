@@ -1,11 +1,13 @@
 Q.scene 'Game', (stage) ->
   stage.insert new Q.Background
 
-  x = Q.center().x
-  y = Q.center().y
-  player = new Q.Player x: x, y: y
-  stage.insert player
+  player = new Q.Player
+    x: Q.center().x
+    y: Q.center().y
+
   stage.insert new Q.Star player: player for [1..(Q.width * Q.height / 5000)]
+
+  stage.insert player
 
   stage.on 'destroy', ->
     player.destroy

@@ -24,7 +24,7 @@ Q.Weapon.extend "Blaster",
 
     Q.audio.play('blasterShot.mp3')
 ,
-  coolDown: 200
+  coolDown: 100
   velocity: 500
 
 Q.Sprite.extend 'BlasterShot',

@@ -11,10 +11,11 @@ Q.Sprite.extend 'Player',
     @.on 'step', 'trail'
     @.on 'step', 'friction'
 
-    Q.input.on 'fire', @, 'fire'
-    Q.input.on 'up', @, 'up'
-    Q.input.on 'left', @, 'left'
-    Q.input.on 'right', @, 'right'
+    Q.input.on 'fire',    @, 'fire'
+    Q.input.on 'up',      @, 'up'
+    Q.input.on 'action',  @, 'up'
+    Q.input.on 'left',    @, 'left'
+    Q.input.on 'right',   @, 'right'
 
   fire: ->
     @weapon.tryFire(@)
@@ -30,7 +31,7 @@ Q.Sprite.extend 'Player',
     @p.angle += 10
 
   trail: (dt) ->
-    if Q.inputs['up']
+    if Q.inputs['up'] or Q.inputs['action']
       @stage.insert new Q.Particle
         x:  @p.x - Q.offsetX(@p.angle, @p.cx)
         y:  @p.y - Q.offsetY(@p.angle, @p.cy)
