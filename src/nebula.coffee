@@ -19,3 +19,8 @@ Q.load [ 'spaceship.png', 'particle.png', 'background.png', 'star.png', 'menu.mp
 
 window.Q = Q
 
+document.addEventListener "click", ->
+  e = document.getElementById("quintus")
+  if e.webkitRequestFullScreen
+    e.webkitRequestFullScreen()
+
