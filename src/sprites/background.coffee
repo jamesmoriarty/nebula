@@ -1,4 +1,5 @@
 Q.Sprite.extend 'Background',
+
   init: (p) ->
     @_super p,
       target: p.target
@@ -30,3 +31,4 @@ Q.Sprite.extend 'Background',
       offsetY  - @drawOffset,
       Q.width  + @drawOffset * 2,
       Q.height + @drawOffset * 2
+

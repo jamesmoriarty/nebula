@@ -1,4 +1,5 @@
 Q.Sprite.extend 'Star',
+
   init: (p) ->
     @_super p,
       target: p.target
@@ -16,3 +17,4 @@ Q.Sprite.extend 'Star',
     if Math.abs(@p.x - @p.target.p.x) > Q.width or Math.abs(@p.y - @p.target.p.y) > Q.height
       @p.x = Q.stage().viewport.x + (Math.random() * Q.width)
       @p.y = Q.stage().viewport.y + (Math.random() * Q.height)
+

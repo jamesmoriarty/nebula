@@ -1,4 +1,5 @@
 Q.Sprite.extend 'Particle',
+
   init: (p) ->
     @_super p,
       asset: 'particle.png'
