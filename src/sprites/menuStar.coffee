@@ -1,4 +1,5 @@
 Q.Sprite.extend 'MenuStar',
+
   init: (p) ->
     @_super p,
       x: Math.random() * Q.width

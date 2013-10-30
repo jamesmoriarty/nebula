@@ -1,13 +1,3 @@
-Q.Weapon = Q.Class.extend "Weapon",
-  init: ->
-    @lastFired = 0
-
-  tryFire: (from) ->
-    now = new Date().getTime()
-    if now > @lastFired + Q[this.className].coolDown
-      @fire(from)
-      @lastFired = now
-
 Q.Weapon.extend "Blaster",
 
   fire: (from) ->
@@ -26,13 +16,4 @@ Q.Weapon.extend "Blaster",
 ,
   coolDown: 100
   velocity: 500
-
-Q.Sprite.extend 'BlasterShot',
-  init: (p) ->
-    @_super p,
-      asset: 'particle.png'
-      z: 5
-      scale: 0.4
-
-    @add('2d')
 
