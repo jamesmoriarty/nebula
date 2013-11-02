@@ -10,6 +10,8 @@ Q.Sprite.extend 'Background',
 
   drawOffset: 200
 
+  debugRender: ->
+
   draw: (ctx) ->
     if @stage.viewport
       offsetX = @stage.viewport.centerX - Q.width / 2

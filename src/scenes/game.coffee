@@ -7,6 +7,8 @@ Q.scene 'Game', (stage) ->
 
   stage.insert new Q.Star target: player for [1..(Q.width * Q.height / 10000)]
 
+  stage.insert new Q.Enemy x: player.p.x, y: player.p.y
+
   stage.insert player
 
   stage.on 'destroy', ->
