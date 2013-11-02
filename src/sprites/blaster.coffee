@@ -12,7 +12,7 @@ Q.Weapon.extend "Blaster",
       vy: from.p.vy + Q.offsetY(angle, velocity)
       angle: angle
 
-    Q.audio.play('blasterShot.mp3')
+    Q.audio.play 'blasterShot.mp3'
 ,
   coolDown: 200
   velocity: 500
