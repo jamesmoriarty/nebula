@@ -10,20 +10,21 @@ Q.Ship.extend 'Player',
 
   step: (dt) ->
     if Q.inputs['up'] or Q.inputs['action']
-      @accelerate(dt)
+      @accelerate dt
     else
-      @friction(dt)
+      @friction dt
 
     if Q.inputs['fire']
       @fire()
 
     if Q.inputs['left']
-      @turn(dt, -100)
+      @turn dt, -Q[@className].rotation
 
     if Q.inputs['right']
-      @turn(dt,  100)
+      @turn dt,  Q[@className].rotation
 
 ,
   acceleration: 100
+  rotation: 100
   maxVelocity: 500
 

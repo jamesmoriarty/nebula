@@ -11,5 +11,6 @@ Q.Ship.extend 'Enemy',
 
 ,
   acceleration: 50
+  rotation: 100
   maxVelocity: 100
 

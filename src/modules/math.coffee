@@ -13,7 +13,7 @@ Quintus.Math = (Q) ->
     distY   = toY - fromY
     radians = Math.atan2 distY, distX
 
-    Q.normalizeAngle(Q.radiansToDegrees(radians))
+    90 + Q.normalizeAngle(Q.radiansToDegrees(radians))
 
   Q.distance = (fromX, fromY, toX = 0, toY = 0) ->
     Math.sqrt Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2)

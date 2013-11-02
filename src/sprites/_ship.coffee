@@ -18,7 +18,7 @@ Q.Sprite.extend 'Ship',
     @p.vx += Q.offsetX(@p.angle, Q[@className].acceleration) * dt
     @p.vy += Q.offsetY(@p.angle, Q[@className].acceleration) * dt
 
-    if Q.distance(@p.vx, @p.vy) > [@className].maxVelocity
+    if Q.distance(@p.vx, @p.vy) > Q[@className].maxVelocity
       @p.vx = vx
       @p.vy = vy
 
