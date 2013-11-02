@@ -10,9 +10,9 @@ Q.component 'aiWander',
 
     targetAngle = Q.angle @entity.p.x, @entity.p.y, @targetX, @targetY
     if @entity.p.angle - targetAngle > 0
-      @entity.turn dt, -100
+      @entity.turn dt, -Q[@entity.className].rotation
     else
-      @entity.turn dt, 100
+      @entity.turn dt,  Q[@entity.className].rotation
 
     @entity.accelerate dt
 
