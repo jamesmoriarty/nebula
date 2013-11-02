@@ -51,6 +51,9 @@
   };
 
   Quintus.Util = function(Q) {
+    Q.random = function(min, max) {
+      return Math.random() * (max - min) + min;
+    };
     return Q.center = function() {
       return {
         x: Q.width / 2,
@@ -71,7 +74,7 @@
 
   Q.clearColor = "#000";
 
-  Q.load(['ship.png', 'enemy.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3', 'blasterShot.mp3'], function() {
+  Q.load(['ship.png', 'enemy.png', 'particle.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -270,7 +273,18 @@
       }, p));
       this.add('2d');
       return this.on('hit', function(col) {
-        return this.destroy();
+        var vd, _i;
+        for (_i = 1; _i <= 5; _i++) {
+          vd = Q.random(-5, 5);
+          this.stage.insert(new Q.Particle({
+            x: col.obj.p.x + vd,
+            y: col.obj.p.y + vd,
+            vx: col.normalX * vd,
+            vy: col.normalY * vd
+          }));
+        }
+        this.destroy();
+        return Q.audio.play('hit.mp3');
       });
     }
   });
