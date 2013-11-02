@@ -64,8 +64,8 @@
 
   Q = Quintus().include('Util, Math, Sprites, Scenes, Input, 2D, Touch, UI, Audio').setup({
     development: true,
-    width: 640,
-    height: 480
+    width: 800,
+    height: 600
   }).controls().touch().enableSound();
 
   Q.gravityY = 0;
@@ -339,7 +339,45 @@
         type: Q.SPRITE_DEFAULT,
         asset: 'ship.png'
       }, p));
-      return this.weapon = new Q.Blaster;
+      this.weapon = new Q.Blaster;
+      return this.on('draw', this, 'minimap');
+    },
+    minimap: function(ctx, width, height) {
+      var centerX, centerY, enemies, _this;
+      if (width == null) {
+        width = 100;
+      }
+      if (height == null) {
+        height = 100;
+      }
+      centerX = width / 2;
+      centerY = height / 2;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.translate(0, 0);
+      ctx.lineWidth = "2";
+      ctx.beginPath();
+      ctx.strokeStyle = "#FFF";
+      ctx.fillStyle = "rgba(255,255,255,0.1)";
+      ctx.rect(0, 0, width, height);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = "#00F";
+      ctx.rect(centerX, centerY, 1, 1);
+      ctx.stroke();
+      ctx.beginPath();
+      _this = this;
+      enemies = Q("Enemy");
+      enemies.each(function() {
+        var x, y;
+        x = centerX + ((_this.p.x - this.p.x) / 100);
+        y = centerY - ((_this.p.y - this.p.y) / 100);
+        ctx.strokeStyle = "#F00";
+        ctx.rect(x, y, 1, 1);
+        return ctx.stroke();
+      });
+      return ctx.restore();
     },
     step: function(dt) {
       if (Q.inputs['up'] || Q.inputs['action']) {
