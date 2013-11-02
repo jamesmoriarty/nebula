@@ -34,7 +34,7 @@
       if (toY == null) {
         toY = 0;
       }
-      return Math.sqrt(Math.pow(fromX - toX, 2), Math.pow(fromY - toY, 2));
+      return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
     };
     Q.offsetX = function(angle, radius) {
       return Math.sin(angle / 180 * Math.PI) * radius;
@@ -171,8 +171,15 @@
       return this.weapon.tryFire(this);
     },
     accelerate: function(dt) {
+      var vx, vy;
+      vx = this.p.vx;
+      vy = this.p.vy;
       this.p.vx += Q.offsetX(this.p.angle, Q[this.className].acceleration) * dt;
       this.p.vy += Q.offsetY(this.p.angle, Q[this.className].acceleration) * dt;
+      if (Q.distance(this.p.vx, this.p.vy) > 500) {
+        this.p.vx = vx;
+        this.p.vy = vy;
+      }
       return this.stage.insert(new Q.Particle({
         x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
         y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
