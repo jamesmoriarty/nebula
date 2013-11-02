@@ -16,7 +16,7 @@ Quintus.Math = (Q) ->
     Q.normalizeAngle(Q.radiansToDegrees(radians))
 
   Q.distance = (fromX, fromY, toX = 0, toY = 0) ->
-    Math.sqrt Math.pow(fromX - toX, 2), Math.pow(fromY - toY, 2)
+    Math.sqrt Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2)
 
   Q.offsetX = (angle, radius) ->
     Math.sin(angle / 180 * Math.PI) * radius
