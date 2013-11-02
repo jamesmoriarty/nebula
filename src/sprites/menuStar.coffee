@@ -4,7 +4,7 @@ Q.Sprite.extend 'MenuStar',
     @_super p,
       x: Math.random() * Q.width
       y: Math.random() * Q.height
-      scale: Math.random()
+      scale: Math.max Math.random(), .3
       asset: 'star.png'
       type: Q.SPRITE_NONE
 
