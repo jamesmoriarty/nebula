@@ -25,7 +25,7 @@
       distX = toX - fromX;
       distY = toY - fromY;
       radians = Math.atan2(distY, distX);
-      return Q.normalizeAngle(Q.radiansToDegrees(radians));
+      return 90 + Q.normalizeAngle(Q.radiansToDegrees(radians));
     };
     Q.distance = function(fromX, fromY, toX, toY) {
       if (toX == null) {
@@ -74,7 +74,7 @@
 
   Q.clearColor = "#000";
 
-  Q.load(['ship.png', 'enemy.png', 'particle.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
+  Q.load(['ship.png', 'enemy.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -179,7 +179,7 @@
       vy = this.p.vy;
       this.p.vx += Q.offsetX(this.p.angle, Q[this.className].acceleration) * dt;
       this.p.vy += Q.offsetY(this.p.angle, Q[this.className].acceleration) * dt;
-      if (Q.distance(this.p.vx, this.p.vy) > [this.className].maxVelocity) {
+      if (Q.distance(this.p.vx, this.p.vy) > Q[this.className].maxVelocity) {
         this.p.vx = vx;
         this.p.vy = vy;
       }
@@ -258,7 +258,7 @@
       return Q.audio.play('blasterShot.mp3');
     }
   }, {
-    coolDown: 100,
+    coolDown: 200,
     velocity: 500
   });
 
@@ -267,9 +267,8 @@
       this._super(Q._extend({
         type: Q.SPRITE_ACTIVE,
         collisionMask: Q.SPRITE_ACTIVE,
-        asset: 'particle.png',
-        z: 5,
-        scale: 0.4
+        asset: 'blasterShot.png',
+        z: 5
       }, p));
       this.add('2d');
       return this.on('hit', function(col) {
@@ -352,14 +351,15 @@
         this.fire();
       }
       if (Q.inputs['left']) {
-        this.turn(dt, -100);
+        this.turn(dt, -Q[this.className].rotation);
       }
       if (Q.inputs['right']) {
-        return this.turn(dt, 100);
+        return this.turn(dt, Q[this.className].rotation);
       }
     }
   }, {
     acceleration: 100,
+    rotation: 100,
     maxVelocity: 500
   });
 
@@ -390,18 +390,17 @@
       return this.entity.on("step", this, "step");
     },
     step: function(dt) {
-      var targetAngle, velocityAngle;
+      var targetAngle;
       if (!this.targetX || !this.targetY || 50 > Q.distance(this.entity.p.x, this.entity.p.y, this.targetX, this.targetY)) {
         this.targetX = Math.random() * 1000;
         this.targetY = Math.random() * 1000;
       }
-      targetAngle = 90 + Q.angle(this.entity.p.x, this.entity.p.y, this.targetX, this.targetY);
+      targetAngle = Q.angle(this.entity.p.x, this.entity.p.y, this.targetX, this.targetY);
       if (this.entity.p.angle - targetAngle > 0) {
-        this.entity.turn(dt, -100);
+        this.entity.turn(dt, -Q[this.entity.className].rotation);
       } else {
-        this.entity.turn(dt, 100);
+        this.entity.turn(dt, Q[this.entity.className].rotation);
       }
-      velocityAngle = 90 + Q.angle(this.entity.p.vx, this.entity.p.vy);
       return this.entity.accelerate(dt);
     }
   });
@@ -417,6 +416,7 @@
     }
   }, {
     acceleration: 50,
+    rotation: 100,
     maxVelocity: 100
   });
 
