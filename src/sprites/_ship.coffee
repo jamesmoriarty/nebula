@@ -12,8 +12,15 @@ Q.Sprite.extend 'Ship',
     @weapon.tryFire(@)
 
   accelerate: (dt) ->
+    vx = @p.vx
+    vy = @p.vy
+
     @p.vx += Q.offsetX(@p.angle, Q[@className].acceleration) * dt
     @p.vy += Q.offsetY(@p.angle, Q[@className].acceleration) * dt
+
+    if Q.distance(@p.vx, @p.vy) > 500
+      @p.vx = vx
+      @p.vy = vy
 
     @stage.insert new Q.Particle
       x:  @p.x -  Q.offsetX(@p.angle, @p.cx)
