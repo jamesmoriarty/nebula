@@ -1,6 +1,6 @@
 Q = Quintus()                                                           # create a new engine instance
   .include('Util, Math, Sprites, Scenes, Input, 2D, Touch, UI, Audio')  # load any needed modules
-  .setup(development: true, width: 640, height: 480)                    # add a canvas element onto the page
+  .setup(development: true, width: 800, height: 600)                    # add a canvas element onto the page
   .controls()                                                           # add in default controls (keyboard, buttons)
   .touch()                                                              # add in touch support (for the UI)
   .enableSound()
