@@ -23,5 +23,7 @@ Q.Ship.extend 'Player',
     if Q.inputs['right']
       @turn(dt,  100)
 
-, acceleration: 100
+,
+  acceleration: 100
+  maxVelocity: 500
 
