@@ -370,7 +370,7 @@
       enemies = Q("Enemy");
       enemies.each(function() {
         var x, y;
-        x = centerX + ((_this.p.x - this.p.x) / 100);
+        x = centerX - ((_this.p.x - this.p.x) / 100);
         y = centerY - ((_this.p.y - this.p.y) / 100);
         ctx.strokeStyle = "#F00";
         ctx.rect(x, y, 1, 1);
