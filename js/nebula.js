@@ -64,8 +64,7 @@
 
   Q = Quintus().include('Util, Math, Sprites, Scenes, Input, 2D, Touch, UI, Audio').setup({
     development: true,
-    width: 800,
-    height: 600
+    maximize: true
   }).controls().touch().enableSound();
 
   Q.gravityY = 0;
