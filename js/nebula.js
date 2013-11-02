@@ -176,7 +176,7 @@
       vy = this.p.vy;
       this.p.vx += Q.offsetX(this.p.angle, Q[this.className].acceleration) * dt;
       this.p.vy += Q.offsetY(this.p.angle, Q[this.className].acceleration) * dt;
-      if (Q.distance(this.p.vx, this.p.vy) > 500) {
+      if (Q.distance(this.p.vx, this.p.vy) > [this.className].maxVelocity) {
         this.p.vx = vx;
         this.p.vy = vy;
       }
@@ -345,7 +345,8 @@
       }
     }
   }, {
-    acceleration: 100
+    acceleration: 100,
+    maxVelocity: 500
   });
 
   Q.Sprite.extend('Star', {
@@ -401,7 +402,8 @@
       return this.add('aiWander');
     }
   }, {
-    acceleration: 50
+    acceleration: 50,
+    maxVelocity: 100
   });
 
 }).call(this);
