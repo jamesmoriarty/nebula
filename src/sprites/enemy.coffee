@@ -9,4 +9,7 @@ Q.Ship.extend 'Enemy',
 
     @add('aiWander')
 
-, acceleration: 50
+,
+  acceleration: 50
+  maxVelocity: 100
+
