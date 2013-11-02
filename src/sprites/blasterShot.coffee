@@ -12,4 +12,15 @@ Q.Sprite.extend 'BlasterShot',
     @add('2d')
 
     @on 'hit', (col) ->
+      for [1..5]
+        vd = Q.random -5, 5
+        @stage.insert new Q.Particle
+          x:  col.obj.p.x + vd
+          y:  col.obj.p.y + vd
+          vx: col.normalX * vd
+          vy: col.normalY * vd
+
       @destroy()
+
+      Q.audio.play 'hit.mp3'
+

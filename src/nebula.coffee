@@ -11,7 +11,7 @@ Q.clearColor = "#000"
 #Q.debug = true
 #Q.debugFill = true
 
-Q.load [ 'ship.png', 'enemy.png', 'particle.png', 'background.png', 'star.png', 'menu.mp3', 'blasterShot.mp3' ], ->
+Q.load [ 'ship.png', 'enemy.png', 'particle.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3' ], ->
     Q.stageScene('Menu')
   , progressCallback: (loaded, total) ->
     percent_loaded = Math.floor(loaded / total * 100)

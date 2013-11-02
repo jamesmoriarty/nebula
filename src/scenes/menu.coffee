@@ -32,5 +32,3 @@ Q.scene 'Menu', (stage) ->
       Q.audio.stop
       Q.stageScene null
 
-  # Q.audio.play 'menu.mp3', loop: true
-
