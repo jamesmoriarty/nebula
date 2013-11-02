@@ -34,7 +34,7 @@ Q.Ship.extend 'Player',
     _this = @
     enemies = Q("Enemy")
     enemies.each ->
-      x = centerX + ((_this.p.x - @p.x) / 100)
+      x = centerX - ((_this.p.x - @p.x) / 100)
       y = centerY - ((_this.p.y - @p.y) / 100)
       ctx.strokeStyle = "#F00"
       ctx.rect x, y, 1, 1
