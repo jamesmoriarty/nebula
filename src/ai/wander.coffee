@@ -4,12 +4,13 @@ Q.component 'aiWander',
     @entity.on "step", @, "step"
 
   step: (dt) ->
-    if !@targetX or !@targetY or 50 > Q.distance(@entity.p.x, @entity.p.y, @targetX, @targetY)
-      @targetX = Math.random() * 1000
-      @targetY = Math.random() * 1000
+    if !@target or 50 > Q.distance(@entity.p.x, @entity.p.y, @target.p.x, @target.p.y)
+      @target = p:
+        x: Math.random() * 1000
+        y: Math.random() * 1000
 
-    targetAngle = Q.angle @entity.p.x, @entity.p.y, @targetX, @targetY
-    if @entity.p.angle - targetAngle > 0
+    targetAngle = @entity.p.angle - Q.angle @entity.p.x, @entity.p.y, @target.p.x, @target.p.y
+    if targetAngle > 0
       @entity.turn dt, -Q[@entity.className].rotation
     else
       @entity.turn dt,  Q[@entity.className].rotation
