@@ -2,6 +2,81 @@
 (function() {
   var Q;
 
+  Quintus.Math = function(Q) {
+    Q.normalizeAngle = function(angle) {
+      var result;
+      result = angle % 360;
+      if (result < 0) {
+        return result + 360;
+      } else {
+        return result;
+      }
+    };
+    Q.angle = function(fromX, fromY, toX, toY) {
+      var distX, distY, radians;
+      distX = toX - fromX;
+      distY = toY - fromY;
+      radians = Math.atan2(distY, distX);
+      return 90 + Q.normalizeAngle(Q.radiansToDegrees(radians));
+    };
+    Q.distance = function(fromX, fromY, toX, toY) {
+      if (toX == null) {
+        toX = 0;
+      }
+      if (toY == null) {
+        toY = 0;
+      }
+      return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
+    };
+    Q.offsetX = function(angle, radius) {
+      return Math.sin(angle / 180 * Math.PI) * radius;
+    };
+    Q.offsetY = function(angle, radius) {
+      return -Math.cos(angle / 180 * Math.PI) * radius;
+    };
+    Q.degreesToRadians = function(degrees) {
+      return degrees * (Math.PI / 180);
+    };
+    return Q.radiansToDegrees = function(radians) {
+      return radians * (180 / Math.PI);
+    };
+  };
+
+  Quintus.Util = function(Q) {
+    Q.random = function(min, max) {
+      return Math.random() * (max - min) + min;
+    };
+    return Q.center = function() {
+      return {
+        x: Q.width / 2,
+        y: Q.height / 2
+      };
+    };
+  };
+
+  Q = Quintus().include('Util, Math, Sprites, Scenes, Input, 2D, Touch, UI, Audio').setup({
+    development: true,
+    maximize: true
+  }).controls().touch().enableSound();
+
+  Q.gravityY = 0;
+
+  Q.gravityX = 0;
+
+  Q.clearColor = "#000";
+
+  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'ship5.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
+    return Q.stageScene('Menu');
+  }, {
+    progressCallback: function(loaded, total) {
+      var percent_loaded;
+      percent_loaded = Math.floor(loaded / total * 100);
+      return document.getElementById('loading_progress').style.width = percent_loaded + '%';
+    }
+  });
+
+  window.Q = Q;
+
   Q.component('aiHunter', {
     added: function() {
       return this.entity.on("step", this, "step");
@@ -137,160 +212,6 @@
     now: function() {
       return new Date().getTime();
     }
-  });
-
-  Array.prototype.x = function() {
-    return this[0];
-  };
-
-  Array.prototype.y = function() {
-    return this[1];
-  };
-
-  Quintus.Math = function(Q) {
-    Q.normalizeAngle = function(angle) {
-      var result;
-      result = angle % 360;
-      if (result < 0) {
-        return result + 360;
-      } else {
-        return result;
-      }
-    };
-    Q.angle = function(fromX, fromY, toX, toY) {
-      var distX, distY, radians;
-      distX = toX - fromX;
-      distY = toY - fromY;
-      radians = Math.atan2(distY, distX);
-      return 90 + Q.normalizeAngle(Q.radiansToDegrees(radians));
-    };
-    Q.distance = function(fromX, fromY, toX, toY) {
-      if (toX == null) {
-        toX = 0;
-      }
-      if (toY == null) {
-        toY = 0;
-      }
-      return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
-    };
-    Q.offsetX = function(angle, radius) {
-      return Math.sin(angle / 180 * Math.PI) * radius;
-    };
-    Q.offsetY = function(angle, radius) {
-      return -Math.cos(angle / 180 * Math.PI) * radius;
-    };
-    Q.degreesToRadians = function(degrees) {
-      return degrees * (Math.PI / 180);
-    };
-    return Q.radiansToDegrees = function(radians) {
-      return radians * (180 / Math.PI);
-    };
-  };
-
-  Quintus.Util = function(Q) {
-    Q.random = function(min, max) {
-      return Math.random() * (max - min) + min;
-    };
-    return Q.center = function() {
-      return {
-        x: Q.width / 2,
-        y: Q.height / 2
-      };
-    };
-  };
-
-  Q = Quintus().include('Util, Math, Sprites, Scenes, Input, 2D, Touch, UI, Audio').setup({
-    development: true,
-    maximize: true
-  }).controls().touch().enableSound();
-
-  Q.gravityY = 0;
-
-  Q.gravityX = 0;
-
-  Q.clearColor = "#000";
-
-  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'ship5.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
-    return Q.stageScene('Menu');
-  }, {
-    progressCallback: function(loaded, total) {
-      var percent_loaded;
-      percent_loaded = Math.floor(loaded / total * 100);
-      return document.getElementById('loading_progress').style.width = percent_loaded + '%';
-    }
-  });
-
-  window.Q = Q;
-
-  Q.scene('Game', function(stage) {
-    var enemy, player, _i, _j, _ref;
-    player = new Q.SmallShip({
-      x: Q.center().x,
-      y: Q.center().y
-    });
-    player.add("player");
-    player.add("minimap");
-    stage.insert(new Q.Background({
-      target: player
-    }));
-    for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
-      stage.insert(new Q.Star({
-        target: player
-      }));
-    }
-    stage.insert(player);
-    for (_j = 1; _j <= 5; _j++) {
-      enemy = new Q.SmallShip({
-        x: player.p.x,
-        y: player.p.y
-      });
-      enemy.add("aiHunter");
-      stage.insert(enemy);
-    }
-    stage.add('viewport');
-    return stage.follow(player, {
-      x: true,
-      y: true
-    });
-  });
-
-  Q.scene('Menu', function(stage) {
-    var color, x, _i, _ref;
-    color = 'white';
-    x = Q.width * (3 / 4);
-    stage.insert(new Q.Background({
-      target: null
-    }));
-    for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
-      stage.insert(new Q.MenuStar);
-    }
-    stage.insert(new Q.UI.Text({
-      label: 'Nebula',
-      x: x,
-      y: Q.height / 4,
-      color: color,
-      family: 'ui',
-      size: 56
-    }));
-    stage.insert(new Q.UI.Button({
-      label: 'New Game',
-      x: x,
-      y: Q.height / 2,
-      fontColor: color,
-      font: '400 24px ui'
-    }, function() {
-      return Q.stageScene('Game');
-    }));
-    return stage.insert(new Q.UI.Button({
-      label: 'Quit',
-      x: x,
-      y: Q.height / (4 / 3),
-      fontColor: color,
-      font: '400 24px ui'
-    }, function() {
-      Q.audio.stop;
-      return Q.stageScene(null);
-    }));
   });
 
   Q.Sprite.extend('Ship', {
@@ -505,6 +426,77 @@
         return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
       }
     }
+  });
+
+  Q.scene('Game', function(stage) {
+    var enemy, player, _i, _j, _ref;
+    player = new Q.SmallShip({
+      x: Q.center().x,
+      y: Q.center().y
+    });
+    player.add("player");
+    player.add("minimap");
+    stage.insert(new Q.Background({
+      target: player
+    }));
+    for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
+      stage.insert(new Q.Star({
+        target: player
+      }));
+    }
+    stage.insert(player);
+    for (_j = 1; _j <= 5; _j++) {
+      enemy = new Q.SmallShip({
+        x: player.p.x,
+        y: player.p.y
+      });
+      enemy.add("aiHunter");
+      stage.insert(enemy);
+    }
+    stage.add('viewport');
+    return stage.follow(player, {
+      x: true,
+      y: true
+    });
+  });
+
+  Q.scene('Menu', function(stage) {
+    var color, x, _i, _ref;
+    color = 'white';
+    x = Q.width * (3 / 4);
+    stage.insert(new Q.Background({
+      target: null
+    }));
+    for (_i = 1, _ref = Q.width * Q.height / 10000; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
+      stage.insert(new Q.MenuStar);
+    }
+    stage.insert(new Q.UI.Text({
+      label: 'Nebula',
+      x: x,
+      y: Q.height / 4,
+      color: color,
+      family: 'ui',
+      size: 56
+    }));
+    stage.insert(new Q.UI.Button({
+      label: 'New Game',
+      x: x,
+      y: Q.height / 2,
+      fontColor: color,
+      font: '400 24px ui'
+    }, function() {
+      return Q.stageScene('Game');
+    }));
+    return stage.insert(new Q.UI.Button({
+      label: 'Quit',
+      x: x,
+      y: Q.height / (4 / 3),
+      fontColor: color,
+      font: '400 24px ui'
+    }, function() {
+      Q.audio.stop;
+      return Q.stageScene(null);
+    }));
   });
 
 }).call(this);
