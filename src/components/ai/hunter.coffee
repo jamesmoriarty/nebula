@@ -7,7 +7,7 @@ Q.component 'aiHunter',
     if !@target
       loop
         @target = Q._shuffle(Q("SmallShip").items)[0]
-        break if @target != @entity
+        break if @target.p.asset != @entity.p.asset
     else
       targetAngle = @entity.p.angle - Q.angle @entity.p.x, @entity.p.y, @target.p.x, @target.p.y
       if targetAngle > 0
