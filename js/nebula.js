@@ -65,7 +65,7 @@
 
   Q.clearColor = "#000";
 
-  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'ship5.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
+  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -87,7 +87,7 @@
         _results = [];
         while (true) {
           this.target = Q._shuffle(Q("SmallShip").items)[0];
-          if (this.target !== this.entity) {
+          if (this.target.p.asset !== this.entity.p.asset) {
             break;
           } else {
             _results.push(void 0);
@@ -396,7 +396,7 @@
       this._super(Q._extend({
         type: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY,
         collisionMask: Q.SPRITE_ACTIVE,
-        asset: "ship" + (Math.floor((Math.random() * 5) + 1)) + ".png"
+        asset: "ship" + (Math.floor((Math.random() * 4) + 1)) + ".png"
       }, p));
       return this.weapon = new Q.Blaster;
     }
@@ -447,8 +447,8 @@
     stage.insert(player);
     for (_j = 1; _j <= 5; _j++) {
       enemy = new Q.SmallShip({
-        x: player.p.x,
-        y: player.p.y
+        x: player.p.x + Math.random() * 300,
+        y: player.p.y + Math.random() * 300
       });
       enemy.add("aiHunter");
       stage.insert(enemy);
