@@ -6,9 +6,11 @@ Q.Sprite.extend 'BlasterShot',
         collisionMask: Q.SPRITE_ACTIVE
         asset: 'blasterShot.png'
         z: 5
+        ttl: 1000
       , p
 
     @add('2d')
+    @add('ttl')
 
     @on 'hit', (col) ->
       for [1..5]

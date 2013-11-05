@@ -11,7 +11,19 @@ Q.clearColor = "#000"
 #Q.debug = true
 #Q.debugFill = true
 
-Q.load [ 'ship.png', 'enemy.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3' ], ->
+Q.load [
+    'ship1.png',
+    'ship2.png',
+    'ship3.png',
+    'ship4.png',
+    'ship5.png',
+    'particle.png',
+    'blasterShot.png',
+    'background.png',
+    'star.png',
+    'hit.mp3',
+    'blasterShot.mp3'
+  ], ->
     Q.stageScene('Menu')
   , progressCallback: (loaded, total) ->
     percent_loaded = Math.floor(loaded / total * 100)
@@ -19,8 +31,8 @@ Q.load [ 'ship.png', 'enemy.png', 'particle.png', 'blasterShot.png', 'background
 
 window.Q = Q
 
-document.addEventListener "click", ->
-  e = document.getElementById("quintus")
-  if e.webkitRequestFullScreen
-    e.webkitRequestFullScreen()
+#document.addEventListener "click", ->
+#  e = document.getElementById("quintus")
+#  if e.webkitRequestFullScreen
+#    e.webkitRequestFullScreen()
 
