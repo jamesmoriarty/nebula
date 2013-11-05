@@ -82,32 +82,43 @@
       return this.entity.on("step", this, "step");
     },
     step: function(dt) {
-      var targetAngle, targetDistance, _results;
-      if (!this.target) {
-        _results = [];
-        while (true) {
-          this.target = Q._shuffle(Q("SmallShip").items)[0];
-          if (this.target.p.asset !== this.entity.p.asset) {
-            break;
-          } else {
-            _results.push(void 0);
-          }
-        }
-        return _results;
-      } else {
-        targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y);
+      var target, targetAngle, targetDistance;
+      target = this.search();
+      if (target) {
+        targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
         if (targetAngle > 0) {
           this.entity.turn(dt, -Q[this.entity.className].rotation);
         } else {
           this.entity.turn(dt, Q[this.entity.className].rotation);
         }
-        targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y);
+        targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
         if (Math.abs(targetAngle) < 10 && targetDistance < 200) {
-          return this.entity.fire();
-        } else {
-          return this.entity.accelerate(dt);
+          this.entity.fire();
         }
+        return this.entity.accelerate(dt);
       }
+    },
+    search: function(target) {
+      var best, targets, _this;
+      if (target == null) {
+        target = null;
+      }
+      _this = this.entity;
+      best = null;
+      targets = Q("SmallShip").items;
+      targets = Q._map(targets, function(target) {
+        return {
+          distance: Q.distance(_this.p.x, _this.p.y, target.p.x, target.p.y),
+          asset: target.p.asset,
+          object: target
+        };
+      });
+      targets = Q._each(targets, function(target) {
+        if (target.object !== _this && target.asset !== _this.p.asset && (!best || best.distance > target.distance)) {
+          return best = target;
+        }
+      });
+      return best.object;
     }
   });
 
@@ -139,13 +150,16 @@
     added: function() {
       return this.entity.on("draw", this, "draw");
     },
-    draw: function(ctx, width, height) {
+    draw: function(ctx, width, height, scale) {
       var centerX, centerY, _this;
       if (width == null) {
         width = 100;
       }
       if (height == null) {
         height = 100;
+      }
+      if (scale == null) {
+        scale = .01;
       }
       centerX = width / 2;
       centerY = height / 2;
@@ -167,8 +181,8 @@
       ctx.beginPath();
       Q("SmallShip").each(function() {
         var x, y;
-        x = centerX - ((_this.p.x - this.p.x) / 100);
-        y = centerY - ((_this.p.y - this.p.y) / 100);
+        x = centerX - ((_this.p.x - this.p.x) * scale);
+        y = centerY - ((_this.p.y - this.p.y) * scale);
         ctx.strokeStyle = "#F00";
         ctx.rect(x, y, 1, 1);
         return ctx.stroke();
@@ -217,9 +231,8 @@
   Q.Sprite.extend('Ship', {
     init: function(p) {
       this._super(Q._extend({
-        type: Q.SPRITE_DEFAULT,
-        collisionMask: Q.SPRITE_ACTIVE,
-        z: 10
+        z: 10,
+        type: Q.SPRITE_FRIENDLY
       }, p));
       return this.add('2d');
     },
@@ -318,8 +331,8 @@
   Q.Sprite.extend('BlasterShot', {
     init: function(p) {
       this._super(Q._extend({
-        type: Q.SPRITE_ACTIVE,
-        collisionMask: Q.SPRITE_ACTIVE,
+        type: Q.SPRITE_ENEMY,
+        collisionMask: Q.SPRITE_FRIENDLY,
         asset: 'blasterShot.png',
         z: 5,
         ttl: 1000
@@ -328,17 +341,19 @@
       this.add('ttl');
       return this.on('hit', function(col) {
         var vd, _i;
-        for (_i = 1; _i <= 5; _i++) {
-          vd = Q.random(-5, 5);
-          this.stage.insert(new Q.Particle({
-            x: col.obj.p.x + vd,
-            y: col.obj.p.y + vd,
-            vx: col.normalX * vd,
-            vy: col.normalY * vd
-          }));
+        if (!col.obj.isA("BlasterShot")) {
+          for (_i = 1; _i <= 5; _i++) {
+            vd = Q.random(-5, 5);
+            this.stage.insert(new Q.Particle({
+              x: col.obj.p.x + vd,
+              y: col.obj.p.y + vd,
+              vx: col.normalX * vd,
+              vy: col.normalY * vd
+            }));
+          }
+          Q.audio.play('hit.mp3');
         }
-        this.destroy();
-        return Q.audio.play('hit.mp3');
+        return this.destroy();
       });
     }
   });
@@ -394,8 +409,6 @@
   Q.Ship.extend('SmallShip', {
     init: function(p) {
       this._super(Q._extend({
-        type: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY,
-        collisionMask: Q.SPRITE_ACTIVE,
         asset: "ship" + (Math.floor((Math.random() * 4) + 1)) + ".png"
       }, p));
       return this.weapon = new Q.Blaster;
