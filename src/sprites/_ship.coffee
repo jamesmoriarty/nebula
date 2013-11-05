@@ -2,14 +2,19 @@ Q.Sprite.extend 'Ship',
 
   init: (p) ->
     @_super Q._extend
-        z: 10
         type: Q.SPRITE_FRIENDLY
+        z: 10
+        hp: 10
+        maxHp: 10
       , p
 
     @add('2d')
 
+    @add('damageable')
+
   fire: ->
-    @weapon.tryFire(@)
+    if @weapon
+      @weapon.tryFire(@)
 
   accelerate: (dt) ->
     vx = @p.vx
