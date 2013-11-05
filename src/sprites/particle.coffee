@@ -4,9 +4,10 @@ Q.Sprite.extend 'Particle',
     @_super Q._extend
         asset: 'particle.png'
         type: Q.SPRITE_NONE
+        collisionMask: Q.SPRITE_NONE
         z: 5
         opacity: 0.5
-        scale: 0.5
+        scale: 0.4
       , p
 
     @add('2d')
@@ -20,7 +21,8 @@ Q.Sprite.extend 'Particle',
       @.destroy()
 
   draw: (ctx) ->
+    ctx.save()
     ctx.globalCompositeOperation = 'lighter'
-
     @_super(ctx)
+    ctx.restore()
 

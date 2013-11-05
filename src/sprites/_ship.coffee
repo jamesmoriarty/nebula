@@ -4,6 +4,7 @@ Q.Sprite.extend 'Ship',
     @_super Q._extend
         type: Q.SPRITE_DEFAULT
         collisionMask: Q.SPRITE_ACTIVE
+        z: 10
       , p
 
     @add('2d')
