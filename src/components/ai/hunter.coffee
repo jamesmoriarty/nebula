@@ -35,5 +35,5 @@ Q.component 'aiHunter',
 
         best = target
 
-    best.object
+    best and best.object
 
