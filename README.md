@@ -17,3 +17,7 @@ Screenshots
 ![screenshot of menu](https://raw.github.com/jamesmoriarty/nebula-js/master/doc/screenshot-01.jpg)
 
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jamesmoriarty/nebula-js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
