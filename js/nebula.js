@@ -118,7 +118,7 @@
           return best = target;
         }
       });
-      return best.object;
+      return best && best.object;
     }
   });
 
@@ -143,6 +143,36 @@
         this.entity.turn(dt, Q[this.entity.className].rotation);
       }
       return this.entity.accelerate(dt);
+    }
+  });
+
+  Q.component('damageable', {
+    added: function() {
+      this.entity.on("draw", this, "draw");
+      return this.entity.on("hit", this, "collision");
+    },
+    collision: function(col) {
+      var damage;
+      if (damage = col.obj.p.damage) {
+        this.entity.p.hp = this.entity.p.hp - damage;
+      }
+      if (this.entity.p.hp <= 0) {
+        return this.entity.destroy();
+      }
+    },
+    draw: function(ctx) {
+      var metrics, text;
+      if (this.entity.p.hp && this.entity.p.maxHp) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.font = "400 14px ui";
+        text = "" + (this.entity.p.hp / this.entity.p.maxHp * 100) + "%";
+        metrics = ctx.measureText(text);
+        ctx.fillStyle = "#FFF";
+        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
+        ctx.fillText(text, -metrics.width / 2, -50);
+        return ctx.restore();
+      }
     }
   });
 
@@ -231,13 +261,18 @@
   Q.Sprite.extend('Ship', {
     init: function(p) {
       this._super(Q._extend({
+        type: Q.SPRITE_FRIENDLY,
         z: 10,
-        type: Q.SPRITE_FRIENDLY
+        hp: 10,
+        maxHp: 10
       }, p));
-      return this.add('2d');
+      this.add('2d');
+      return this.add('damageable');
     },
     fire: function() {
-      return this.weapon.tryFire(this);
+      if (this.weapon) {
+        return this.weapon.tryFire(this);
+      }
     },
     accelerate: function(dt) {
       var vx, vy;
@@ -335,6 +370,7 @@
         collisionMask: Q.SPRITE_FRIENDLY,
         asset: 'blasterShot.png',
         z: 5,
+        damage: 1,
         ttl: 1000
       }, p));
       this.add('2d');
