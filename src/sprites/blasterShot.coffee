@@ -6,6 +6,7 @@ Q.Sprite.extend 'BlasterShot',
         collisionMask: Q.SPRITE_FRIENDLY
         asset: 'blasterShot.png'
         z: 5
+        damage: 1
         ttl: 1000
       , p
 
