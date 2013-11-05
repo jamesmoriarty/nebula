@@ -2,9 +2,8 @@ Q.Sprite.extend 'Ship',
 
   init: (p) ->
     @_super Q._extend
-        type: Q.SPRITE_DEFAULT
-        collisionMask: Q.SPRITE_ACTIVE
         z: 10
+        type: Q.SPRITE_FRIENDLY
       , p
 
     @add('2d')

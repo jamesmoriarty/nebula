@@ -2,8 +2,8 @@ Q.Sprite.extend 'BlasterShot',
 
   init: (p) ->
     @_super Q._extend
-        type: Q.SPRITE_ACTIVE
-        collisionMask: Q.SPRITE_ACTIVE
+        type: Q.SPRITE_ENEMY
+        collisionMask: Q.SPRITE_FRIENDLY
         asset: 'blasterShot.png'
         z: 5
         ttl: 1000
@@ -13,15 +13,15 @@ Q.Sprite.extend 'BlasterShot',
     @add('ttl')
 
     @on 'hit', (col) ->
-      for [1..5]
-        vd = Q.random -5, 5
-        @stage.insert new Q.Particle
-          x:  col.obj.p.x + vd
-          y:  col.obj.p.y + vd
-          vx: col.normalX * vd
-          vy: col.normalY * vd
+      unless col.obj.isA "BlasterShot"
+        for [1..5]
+          vd = Q.random -5, 5
+          @stage.insert new Q.Particle
+            x:  col.obj.p.x + vd
+            y:  col.obj.p.y + vd
+            vx: col.normalX * vd
+            vy: col.normalY * vd
+        Q.audio.play 'hit.mp3'
 
       @destroy()
-
-      Q.audio.play 'hit.mp3'
 
