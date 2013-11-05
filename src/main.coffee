@@ -16,7 +16,6 @@ Q.load [
     'ship2.png',
     'ship3.png',
     'ship4.png',
-    'ship5.png',
     'particle.png',
     'blasterShot.png',
     'background.png',

@@ -14,8 +14,8 @@ Q.scene 'Game', (stage) ->
 
   for [1..5]
     enemy = new Q.SmallShip
-      x: player.p.x
-      y: player.p.y
+      x: player.p.x + Math.random() * 300
+      y: player.p.y + Math.random() * 300
     enemy.add("aiHunter")
     stage.insert enemy
 
