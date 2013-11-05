@@ -73,7 +73,7 @@
 
   Q.clearColor = "#000";
 
-  Q.load(['ship.png', 'enemy.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
+  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'ship5.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -85,20 +85,14 @@
 
   window.Q = Q;
 
-  document.addEventListener("click", function() {
-    var e;
-    e = document.getElementById("quintus");
-    if (e.webkitRequestFullScreen) {
-      return e.webkitRequestFullScreen();
-    }
-  });
-
   Q.scene('Game', function(stage) {
-    var player, _i, _ref;
-    player = new Q.Player({
+    var enemy, player, _i, _j, _ref;
+    player = new Q.SmallShip({
       x: Q.center().x,
       y: Q.center().y
     });
+    player.add("player");
+    player.add("minimap");
     stage.insert(new Q.Background({
       target: player
     }));
@@ -107,14 +101,15 @@
         target: player
       }));
     }
-    stage.insert(new Q.Enemy({
-      x: player.p.x,
-      y: player.p.y
-    }));
     stage.insert(player);
-    stage.on('destroy', function() {
-      return player.destroy;
-    });
+    for (_j = 1; _j <= 5; _j++) {
+      enemy = new Q.SmallShip({
+        x: player.p.x,
+        y: player.p.y
+      });
+      enemy.add("aiHunter");
+      stage.insert(enemy);
+    }
     stage.add('viewport');
     return stage.follow(player, {
       x: true,
@@ -165,7 +160,8 @@
     init: function(p) {
       this._super(Q._extend({
         type: Q.SPRITE_DEFAULT,
-        collisionMask: Q.SPRITE_ACTIVE
+        collisionMask: Q.SPRITE_ACTIVE,
+        z: 10
       }, p));
       return this.add('2d');
     },
@@ -267,9 +263,11 @@
         type: Q.SPRITE_ACTIVE,
         collisionMask: Q.SPRITE_ACTIVE,
         asset: 'blasterShot.png',
-        z: 5
+        z: 5,
+        ttl: 1000
       }, p));
       this.add('2d');
+      this.add('ttl');
       return this.on('hit', function(col) {
         var vd, _i;
         for (_i = 1; _i <= 5; _i++) {
@@ -311,9 +309,10 @@
       this._super(Q._extend({
         asset: 'particle.png',
         type: Q.SPRITE_NONE,
+        collisionMask: Q.SPRITE_NONE,
         z: 5,
         opacity: 0.5,
-        scale: 0.5
+        scale: 0.4
       }, p));
       return this.add('2d');
     },
@@ -327,77 +326,11 @@
       }
     },
     draw: function(ctx) {
-      ctx.globalCompositeOperation = 'lighter';
-      return this._super(ctx);
-    }
-  });
-
-  Q.Ship.extend('Player', {
-    init: function(p) {
-      this._super(Q._extend({
-        type: Q.SPRITE_DEFAULT,
-        asset: 'ship.png'
-      }, p));
-      this.weapon = new Q.Blaster;
-      return this.on('draw', this, 'minimap');
-    },
-    minimap: function(ctx, width, height) {
-      var centerX, centerY, enemies, _this;
-      if (width == null) {
-        width = 100;
-      }
-      if (height == null) {
-        height = 100;
-      }
-      centerX = width / 2;
-      centerY = height / 2;
       ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.translate(0, 0);
-      ctx.lineWidth = "2";
-      ctx.beginPath();
-      ctx.strokeStyle = "#FFF";
-      ctx.fillStyle = "rgba(255,255,255,0.1)";
-      ctx.rect(0, 0, width, height);
-      ctx.fill();
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.strokeStyle = "#00F";
-      ctx.rect(centerX, centerY, 1, 1);
-      ctx.stroke();
-      ctx.beginPath();
-      _this = this;
-      enemies = Q("Enemy");
-      enemies.each(function() {
-        var x, y;
-        x = centerX - ((_this.p.x - this.p.x) / 100);
-        y = centerY - ((_this.p.y - this.p.y) / 100);
-        ctx.strokeStyle = "#F00";
-        ctx.rect(x, y, 1, 1);
-        return ctx.stroke();
-      });
+      ctx.globalCompositeOperation = 'lighter';
+      this._super(ctx);
       return ctx.restore();
-    },
-    step: function(dt) {
-      if (Q.inputs['up'] || Q.inputs['action']) {
-        this.accelerate(dt);
-      } else {
-        this.friction(dt);
-      }
-      if (Q.inputs['fire']) {
-        this.fire();
-      }
-      if (Q.inputs['left']) {
-        this.turn(dt, -Q[this.className].rotation);
-      }
-      if (Q.inputs['right']) {
-        return this.turn(dt, Q[this.className].rotation);
-      }
     }
-  }, {
-    acceleration: 100,
-    rotation: 100,
-    maxVelocity: 500
   });
 
   Q.Sprite.extend('Star', {
@@ -420,41 +353,6 @@
         return this.p.y = Q.stage().viewport.y + (Math.random() * Q.height);
       }
     }
-  });
-
-  Q.component('aiWander', {
-    added: function() {
-      return this.entity.on("step", this, "step");
-    },
-    step: function(dt) {
-      var targetAngle;
-      if (!this.targetX || !this.targetY || 50 > Q.distance(this.entity.p.x, this.entity.p.y, this.targetX, this.targetY)) {
-        this.targetX = Math.random() * 1000;
-        this.targetY = Math.random() * 1000;
-      }
-      targetAngle = Q.angle(this.entity.p.x, this.entity.p.y, this.targetX, this.targetY);
-      if (this.entity.p.angle - targetAngle > 0) {
-        this.entity.turn(dt, -Q[this.entity.className].rotation);
-      } else {
-        this.entity.turn(dt, Q[this.entity.className].rotation);
-      }
-      return this.entity.accelerate(dt);
-    }
-  });
-
-  Q.Ship.extend('Enemy', {
-    init: function(p) {
-      this._super(Q._extend({
-        type: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY,
-        collisionMask: Q.SPRITE_ACTIVE,
-        asset: 'enemy.png'
-      }, p));
-      return this.add('aiWander');
-    }
-  }, {
-    acceleration: 50,
-    rotation: 100,
-    maxVelocity: 100
   });
 
 }).call(this);
