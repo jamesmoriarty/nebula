@@ -149,6 +149,36 @@
     }
   });
 
+  Q.component('damageable', {
+    added: function() {
+      this.entity.on("draw", this, "draw");
+      return this.entity.on("hit", this, "collision");
+    },
+    collision: function(col) {
+      var damage;
+      if (damage = col.obj.p.damage) {
+        this.entity.p.hp = this.entity.p.hp - damage;
+      }
+      if (this.entity.p.hp <= 0) {
+        return this.entity.destroy();
+      }
+    },
+    draw: function(ctx) {
+      var metrics, text;
+      if (this.entity.p.hp && this.entity.p.maxHp) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.font = "400 14px ui";
+        text = "" + (this.entity.p.hp / this.entity.p.maxHp * 100) + "%";
+        metrics = ctx.measureText(text);
+        ctx.fillStyle = "#FFF";
+        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
+        ctx.fillText(text, -metrics.width / 2, -50);
+        return ctx.restore();
+      }
+    }
+  });
+
   Q.component('minimap', {
     added: function() {
       return this.entity.on("draw", this, "draw");
@@ -469,16 +499,32 @@
       }));
     }
     stage.insert(player);
-    for (_j = 1; _j <= 9; _j++) {
+    for (_j = 1; _j <= 6; _j++) {
       enemy = new Q.SmallShip({
         x: player.p.x + Math.random() * Q.random(-1000, 1000),
         y: player.p.y + Math.random() * Q.random(-1000, 1000)
       });
       enemy.add("aiHunter");
       stage.insert(enemy);
+      enemy.on('destroyed', function() {
+        var won;
+        won = true;
+        Q._each(Q("SmallShip").items, function(ship) {
+          if (ship.p.hp !== 0 && ship.p.asset !== player.p.asset) {
+            return won = false;
+          }
+        });
+        if (won) {
+          return setTimeout(function() {
+            return Q.stageScene('Menu');
+          }, 3000);
+        }
+      });
     }
     player.on('destroyed', function() {
-      return Q.stageScene('Menu');
+      return setTimeout(function() {
+        return Q.stageScene('Menu');
+      }, 3000);
     });
     stage.add('viewport');
     return stage.follow(player, {
@@ -524,36 +570,6 @@
       Q.audio.stop;
       return Q.stageScene(null);
     }));
-  });
-
-  Q.component('damageable', {
-    added: function() {
-      this.entity.on("draw", this, "draw");
-      return this.entity.on("hit", this, "collision");
-    },
-    collision: function(col) {
-      var damage;
-      if (damage = col.obj.p.damage) {
-        this.entity.p.hp = this.entity.p.hp - damage;
-      }
-      if (this.entity.p.hp <= 0) {
-        return this.entity.destroy();
-      }
-    },
-    draw: function(ctx) {
-      var metrics, text;
-      if (this.entity.p.hp && this.entity.p.maxHp) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = "400 14px ui";
-        text = "" + (this.entity.p.hp / this.entity.p.maxHp * 100) + "%";
-        metrics = ctx.measureText(text);
-        ctx.fillStyle = "#FFF";
-        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
-        ctx.fillText(text, -metrics.width / 2, -50);
-        return ctx.restore();
-      }
-    }
   });
 
 }).call(this);
