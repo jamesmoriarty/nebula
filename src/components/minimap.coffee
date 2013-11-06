@@ -19,18 +19,18 @@ Q.component 'minimap',
     ctx.fill()
     ctx.stroke()
 
+    _this = @entity
+    ctx.beginPath()
+    Q("SmallShip").each ->
+      if @ != _this
+        x = centerX - ((_this.p.x - @p.x) * scale)
+        y = centerY - ((_this.p.y - @p.y) * scale)
+        ctx.strokeStyle = "#F00"
+        ctx.rect x, y, 1, 1
+        ctx.stroke()
+
     ctx.beginPath()
     ctx.strokeStyle = "#00F"
     ctx.rect centerX, centerY, 1, 1
     ctx.stroke()
-
-    _this = @entity
-    ctx.beginPath()
-    Q("SmallShip").each ->
-      x = centerX - ((_this.p.x - @p.x) * scale)
-      y = centerY - ((_this.p.y - @p.y) * scale)
-      ctx.strokeStyle = "#F00"
-      ctx.rect x, y, 1, 1
-      ctx.stroke()
-
     ctx.restore()
