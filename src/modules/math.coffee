@@ -1,5 +1,8 @@
 Quintus.Math = (Q) ->
 
+  Q.random = (from, to) ->
+    Math.floor Math.random() * (to-from + 1) + from
+
   Q.normalizeAngle = (angle) ->
     result = angle % 360
 
