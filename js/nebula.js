@@ -3,6 +3,9 @@
   var Q;
 
   Quintus.Math = function(Q) {
+    Q.random = function(from, to) {
+      return Math.floor(Math.random() * (to - from + 1) + from);
+    };
     Q.normalizeAngle = function(angle) {
       var result;
       result = angle % 360;
@@ -146,36 +149,6 @@
     }
   });
 
-  Q.component('damageable', {
-    added: function() {
-      this.entity.on("draw", this, "draw");
-      return this.entity.on("hit", this, "collision");
-    },
-    collision: function(col) {
-      var damage;
-      if (damage = col.obj.p.damage) {
-        this.entity.p.hp = this.entity.p.hp - damage;
-      }
-      if (this.entity.p.hp <= 0) {
-        return this.entity.destroy();
-      }
-    },
-    draw: function(ctx) {
-      var metrics, text;
-      if (this.entity.p.hp && this.entity.p.maxHp) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = "400 14px ui";
-        text = "" + (this.entity.p.hp / this.entity.p.maxHp * 100) + "%";
-        metrics = ctx.measureText(text);
-        ctx.fillStyle = "#FFF";
-        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
-        ctx.fillText(text, -metrics.width / 2, -50);
-        return ctx.restore();
-      }
-    }
-  });
-
   Q.component('minimap', {
     added: function() {
       return this.entity.on("draw", this, "draw");
@@ -203,20 +176,22 @@
       ctx.rect(0, 0, width, height);
       ctx.fill();
       ctx.stroke();
-      ctx.beginPath();
-      ctx.strokeStyle = "#00F";
-      ctx.rect(centerX, centerY, 1, 1);
-      ctx.stroke();
       _this = this.entity;
       ctx.beginPath();
       Q("SmallShip").each(function() {
         var x, y;
-        x = centerX - ((_this.p.x - this.p.x) * scale);
-        y = centerY - ((_this.p.y - this.p.y) * scale);
-        ctx.strokeStyle = "#F00";
-        ctx.rect(x, y, 1, 1);
-        return ctx.stroke();
+        if (this !== _this) {
+          x = centerX - ((_this.p.x - this.p.x) * scale);
+          y = centerY - ((_this.p.y - this.p.y) * scale);
+          ctx.strokeStyle = "#F00";
+          ctx.rect(x, y, 1, 1);
+          return ctx.stroke();
+        }
       });
+      ctx.beginPath();
+      ctx.strokeStyle = "#00F";
+      ctx.rect(centerX, centerY, 1, 1);
+      ctx.stroke();
       return ctx.restore();
     }
   });
@@ -494,14 +469,17 @@
       }));
     }
     stage.insert(player);
-    for (_j = 1; _j <= 5; _j++) {
+    for (_j = 1; _j <= 9; _j++) {
       enemy = new Q.SmallShip({
-        x: player.p.x + Math.random() * 300,
-        y: player.p.y + Math.random() * 300
+        x: player.p.x + Math.random() * Q.random(-1000, 1000),
+        y: player.p.y + Math.random() * Q.random(-1000, 1000)
       });
       enemy.add("aiHunter");
       stage.insert(enemy);
     }
+    player.on('destroyed', function() {
+      return Q.stageScene('Menu');
+    });
     stage.add('viewport');
     return stage.follow(player, {
       x: true,
@@ -546,6 +524,36 @@
       Q.audio.stop;
       return Q.stageScene(null);
     }));
+  });
+
+  Q.component('damageable', {
+    added: function() {
+      this.entity.on("draw", this, "draw");
+      return this.entity.on("hit", this, "collision");
+    },
+    collision: function(col) {
+      var damage;
+      if (damage = col.obj.p.damage) {
+        this.entity.p.hp = this.entity.p.hp - damage;
+      }
+      if (this.entity.p.hp <= 0) {
+        return this.entity.destroy();
+      }
+    },
+    draw: function(ctx) {
+      var metrics, text;
+      if (this.entity.p.hp && this.entity.p.maxHp) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.font = "400 14px ui";
+        text = "" + (this.entity.p.hp / this.entity.p.maxHp * 100) + "%";
+        metrics = ctx.measureText(text);
+        ctx.fillStyle = "#FFF";
+        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
+        ctx.fillText(text, -metrics.width / 2, -50);
+        return ctx.restore();
+      }
+    }
   });
 
 }).call(this);
