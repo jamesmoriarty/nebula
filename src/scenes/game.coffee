@@ -12,15 +12,27 @@ Q.scene 'Game', (stage) ->
 
   stage.insert player
 
-  for [1..9]
+  for [1..6]
     enemy = new Q.SmallShip
       x: player.p.x + Math.random() * Q.random(-1000, 1000)
       y: player.p.y + Math.random() * Q.random(-1000, 1000)
     enemy.add("aiHunter")
     stage.insert enemy
 
+    enemy.on 'destroyed', ->
+      won = true
+      Q._each Q("SmallShip").items, (ship) ->
+        if ship.p.hp != 0 and ship.p.asset != player.p.asset
+          won = false
+      if won
+        setTimeout ->
+          Q.stageScene 'Menu'
+        , 3000
+
   player.on 'destroyed', ->
-    Q.stageScene 'Menu'
+    setTimeout ->
+      Q.stageScene 'Menu'
+    , 3000
 
   stage.add 'viewport'
   stage.follow(player, x: true, y: true)
