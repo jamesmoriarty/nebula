@@ -286,12 +286,14 @@
         this.p.vx = vx;
         this.p.vy = vy;
       }
-      return this.stage.insert(new Q.Particle({
-        x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
-        y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
-        vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 75)),
-        vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 75))
-      }));
+      if (Q._loopFrame % 2 === 0) {
+        return this.stage.insert(new Q.Particle({
+          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
+          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 75)),
+          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 75))
+        }));
+      }
     },
     turn: function(dt, degree) {
       return this.p.angle += degree * dt;
