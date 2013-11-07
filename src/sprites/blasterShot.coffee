@@ -26,3 +26,9 @@ Q.Sprite.extend 'BlasterShot',
 
       @destroy()
 
+  draw: (ctx) ->
+    ctx.save()
+    ctx.globalCompositeOperation = 'lighter'
+    @_super(ctx)
+    ctx.restore()
+
