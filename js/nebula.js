@@ -501,6 +501,7 @@
     stage.insert(player);
     for (_j = 1; _j <= 6; _j++) {
       enemy = new Q.SmallShip({
+        angle: Math.random() * 360,
         x: player.p.x + Math.random() * Q.random(-1000, 1000),
         y: player.p.y + Math.random() * Q.random(-1000, 1000)
       });
