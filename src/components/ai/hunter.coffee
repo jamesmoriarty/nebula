@@ -4,9 +4,10 @@ Q.component 'aiHunter',
     @entity.on "step", @, "step"
 
   step: (dt) ->
-    target = @search()
+    @entity.accelerate dt
 
-    if target
+    if target = @search()
+
       targetAngle = @entity.p.angle - Q.angle @entity.p.x, @entity.p.y, target.p.x, target.p.y
       if targetAngle > 0
         @entity.turn dt, -Q[@entity.className].rotation
@@ -17,23 +18,16 @@ Q.component 'aiHunter',
       if Math.abs(targetAngle) < 10 and targetDistance < 200
         @entity.fire()
 
-      @entity.accelerate dt
 
-  search: (target = null) ->
-    _this = @entity
-    best = null
+  search: (option = null, best = null, _this = @entity) ->
+    Q._each Q("SmallShip").items, (option) ->
+        option =
+          distance: Q.distance _this.p.x, _this.p.y, option.p.x, option.p.y
+          asset: option.p.asset
+          object: option
 
-    targets = Q("SmallShip").items
-
-    targets = Q._map targets, (target) ->
-        distance: Q.distance _this.p.x, _this.p.y, target.p.x, target.p.y
-        asset: target.p.asset
-        object: target
-
-    targets = Q._each targets, (target) ->
-      if target.object != _this and target.asset != _this.p.asset and (!best or best.distance > target.distance)
-
-        best = target
+        if option.object != _this and option.asset != _this.p.asset and (!best or best.distance > option.distance)
+          best = option
 
     best and best.object
 

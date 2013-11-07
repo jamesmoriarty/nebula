@@ -6,8 +6,6 @@ Q.component 'player',
   step: (dt) ->
     if Q.inputs['up'] or Q.inputs['action']
       @entity.accelerate dt
-    else
-      @entity.friction dt
 
     if Q.inputs['fire']
       @entity.fire()

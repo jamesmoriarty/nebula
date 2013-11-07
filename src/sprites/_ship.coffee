@@ -36,7 +36,3 @@ Q.Sprite.extend 'Ship',
   turn: (dt, degree) ->
     @p.angle += degree * dt
 
-  friction: (dt) ->
-      @p.vx *= (1 - dt)
-      @p.vy *= (1 - dt)
-
