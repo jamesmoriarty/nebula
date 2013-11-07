@@ -9,7 +9,7 @@ Q.scene 'Menu', (stage) ->
   stage.insert new Q.UI.Text
     label: 'Nebula',
     x: x,
-    y: Q.height / 4,
+    y: Q.height / 3,
     color: color,
     family: 'ui'
     size: 56
@@ -17,18 +17,8 @@ Q.scene 'Menu', (stage) ->
   stage.insert new Q.UI.Button
       label: 'New Game',
       x: x,
-      y: Q.height / 2
+      y: Q.height / 3 * 2
       fontColor: color,
       font: '400 24px ui',
     , -> Q.stageScene 'Game'
-
-  stage.insert new Q.UI.Button
-      label: 'Quit',
-      x: x,
-      y: Q.height / (4 / 3)
-      fontColor: color,
-      font: '400 24px ui',
-    , ->
-      Q.audio.stop
-      Q.stageScene null
 
