@@ -86,8 +86,8 @@
     },
     step: function(dt) {
       var target, targetAngle, targetDistance;
-      target = this.search();
-      if (target) {
+      this.entity.accelerate(dt);
+      if (target = this.search()) {
         targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
         if (targetAngle > 0) {
           this.entity.turn(dt, -Q[this.entity.className].rotation);
@@ -96,29 +96,28 @@
         }
         targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
         if (Math.abs(targetAngle) < 10 && targetDistance < 200) {
-          this.entity.fire();
+          return this.entity.fire();
         }
-        return this.entity.accelerate(dt);
       }
     },
-    search: function(target) {
-      var best, targets, _this;
-      if (target == null) {
-        target = null;
+    search: function(option, best, _this) {
+      if (option == null) {
+        option = null;
       }
-      _this = this.entity;
-      best = null;
-      targets = Q("SmallShip").items;
-      targets = Q._map(targets, function(target) {
-        return {
-          distance: Q.distance(_this.p.x, _this.p.y, target.p.x, target.p.y),
-          asset: target.p.asset,
-          object: target
+      if (best == null) {
+        best = null;
+      }
+      if (_this == null) {
+        _this = this.entity;
+      }
+      Q._each(Q("SmallShip").items, function(option) {
+        option = {
+          distance: Q.distance(_this.p.x, _this.p.y, option.p.x, option.p.y),
+          asset: option.p.asset,
+          object: option
         };
-      });
-      targets = Q._each(targets, function(target) {
-        if (target.object !== _this && target.asset !== _this.p.asset && (!best || best.distance > target.distance)) {
-          return best = target;
+        if (option.object !== _this && option.asset !== _this.p.asset && (!best || best.distance > option.distance)) {
+          return best = option;
         }
       });
       return best && best.object;
@@ -233,8 +232,6 @@
     step: function(dt) {
       if (Q.inputs['up'] || Q.inputs['action']) {
         this.entity.accelerate(dt);
-      } else {
-        this.entity.friction(dt);
       }
       if (Q.inputs['fire']) {
         this.entity.fire();
@@ -298,10 +295,6 @@
     },
     turn: function(dt, degree) {
       return this.p.angle += degree * dt;
-    },
-    friction: function(dt) {
-      this.p.vx *= 1 - dt;
-      return this.p.vy *= 1 - dt;
     }
   });
 
