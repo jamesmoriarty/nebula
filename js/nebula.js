@@ -168,7 +168,7 @@
         ctx.save();
         ctx.beginPath();
         ctx.font = "400 14px ui";
-        text = "" + (this.entity.p.hp / this.entity.p.maxHp * 100) + "%";
+        text = "" + (Math.round(this.entity.p.hp / this.entity.p.maxHp * 100)) + "%";
         metrics = ctx.measureText(text);
         ctx.fillStyle = "#FFF";
         ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
@@ -266,10 +266,16 @@
         type: Q.SPRITE_FRIENDLY,
         z: 10,
         hp: 10,
-        maxHp: 10
+        maxHp: 10,
+        recharge: .1
       }, p));
       this.add('2d');
       return this.add('damageable');
+    },
+    step: function(dt) {
+      if (this.p.recharge * dt + this.p.hp < this.p.maxHp) {
+        return this.p.hp = this.p.hp + this.p.recharge * dt;
+      }
     },
     fire: function() {
       if (this.weapon) {
@@ -360,7 +366,7 @@
     }
   }, {
     coolDown: 200,
-    velocity: 500
+    velocity: 750
   });
 
   Q.Sprite.extend('BlasterShot', {
@@ -457,8 +463,8 @@
     }
   }, {
     acceleration: 100,
-    rotation: 100,
-    maxVelocity: 200
+    rotation: 150,
+    maxVelocity: 250
   });
 
   Q.Sprite.extend('Star', {
