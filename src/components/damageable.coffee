@@ -15,7 +15,7 @@ Q.component 'damageable',
       ctx.save()
       ctx.beginPath()
       ctx.font      = "400 14px ui"
-      text          = "#{@entity.p.hp / @entity.p.maxHp * 100}%"
+      text          = "#{Math.round(@entity.p.hp / @entity.p.maxHp * 100)}%"
       metrics       = ctx.measureText(text)
       ctx.fillStyle = "#FFF"
       ctx.rotate Q.degreesToRadians(-@entity.p.angle)

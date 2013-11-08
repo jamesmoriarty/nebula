@@ -6,11 +6,16 @@ Q.Sprite.extend 'Ship',
         z: 10
         hp: 10
         maxHp: 10
+        recharge: .1
       , p
 
     @add('2d')
 
     @add('damageable')
+
+  step: (dt) ->
+    if @p.recharge * dt + @p.hp < @p.maxHp
+      @p.hp = @p.hp + @p.recharge * dt
 
   fire: ->
     if @weapon
