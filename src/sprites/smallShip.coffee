@@ -8,6 +8,6 @@ Q.Ship.extend 'SmallShip',
     @weapon = new Q.Blaster
 ,
   acceleration: 100
-  rotation: 100
-  maxVelocity: 200
+  rotation: 150
+  maxVelocity: 250
 

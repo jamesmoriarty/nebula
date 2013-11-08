@@ -15,5 +15,5 @@ Q.Weapon.extend "Blaster",
     Q.audio.play 'blasterShot.mp3'
 ,
   coolDown: 200
-  velocity: 500
+  velocity: 750
 
