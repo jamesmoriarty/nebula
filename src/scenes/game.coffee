@@ -2,6 +2,7 @@ Q.scene 'Game', (stage) ->
   player = new Q.SmallShip
     x: Q.center().x
     y: Q.center().y
+  player.add("blaster")
   player.add("player")
   player.add("minimap")
 
@@ -18,6 +19,7 @@ Q.scene 'Game', (stage) ->
       x: player.p.x + Math.random() * Q.random(-1000, 1000)
       y: player.p.y + Math.random() * Q.random(-1000, 1000)
     enemy.add("aiHunter")
+    enemy.add("blaster")
     stage.insert enemy
 
     enemy.on 'destroyed', ->

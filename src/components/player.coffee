@@ -8,7 +8,7 @@ Q.component 'player',
       @entity.accelerate dt
 
     if Q.inputs['fire']
-      @entity.fire()
+      @entity.trigger 'fire'
 
     if Q.inputs['left']
       @entity.turn dt, -Q[@entity.className].rotation

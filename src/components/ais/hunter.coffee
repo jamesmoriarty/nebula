@@ -16,7 +16,7 @@ Q.component 'aiHunter',
 
       targetDistance = Q.distance @entity.p.x, @entity.p.y, target.p.x, target.p.y
       if Math.abs(targetAngle) < 10 and targetDistance < 200
-        @entity.fire()
+        @entity.trigger 'fire'
 
 
   search: (option = null, best = null, _this = @entity) ->

@@ -17,10 +17,6 @@ Q.Sprite.extend 'Ship',
     if @p.recharge * dt + @p.hp < @p.maxHp
       @p.hp = @p.hp + @p.recharge * dt
 
-  fire: ->
-    if @weapon
-      @weapon.tryFire(@)
-
   accelerate: (dt) ->
     vx = @p.vx
     vy = @p.vy
