@@ -68,7 +68,7 @@
 
   Q.clearColor = "#000";
 
-  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'blasterShot.mp3'], function() {
+  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'exp.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -171,7 +171,8 @@
       this.add('damageable');
       this.on('up', this, 'up');
       this.on('left', this, 'left');
-      return this.on('right', this, 'right');
+      this.on('right', this, 'right');
+      return this.on('destroyed', this, 'destroyed');
     },
     step: function(dt) {
       if (this.p.recharge * dt + this.p.hp < this.p.maxHp) {
@@ -204,6 +205,15 @@
     },
     left: function(dt) {
       return this.turn(dt, -Q[this.className].rotation);
+    },
+    destroyed: function(dt) {
+      Q.audio.play('exp.mp3');
+      return this.stage.insert(new Q.Explosion({
+        x: this.p.x,
+        y: this.p.y,
+        vx: this.p.vx,
+        vy: this.p.vy
+      }));
     }
   });
 
@@ -583,6 +593,35 @@
   }, {
     coolDown: 200,
     velocity: 750
+  });
+
+  Q.Sprite.extend('Explosion', {
+    init: function(p) {
+      this._super(Q._extend({
+        asset: 'particle.png',
+        type: Q.SPRITE_NONE,
+        collisionMask: Q.SPRITE_NONE,
+        z: 5,
+        scale: 2
+      }, p));
+      return this.add('2d');
+    },
+    step: function(dt) {
+      this.p.vx *= 1 - dt;
+      this.p.vy *= 1 - dt;
+      this.p.scale += dt;
+      if (this.p.opacity >= 0) {
+        return this.p.opacity -= dt;
+      } else {
+        return this.destroy();
+      }
+    },
+    draw: function(ctx) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      this._super(ctx);
+      return ctx.restore();
+    }
   });
 
 }).call(this);
