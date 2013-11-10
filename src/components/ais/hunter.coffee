@@ -4,19 +4,19 @@ Q.component 'aiHunter',
     @entity.on "step", @, "step"
 
   step: (dt) ->
-    @entity.accelerate dt
+    @entity.trigger 'up', dt
 
     if target = @search()
 
       targetAngle = @entity.p.angle - Q.angle @entity.p.x, @entity.p.y, target.p.x, target.p.y
       if targetAngle > 0
-        @entity.turn dt, -Q[@entity.className].rotation
+        @entity.trigger 'left', dt
       else
-        @entity.turn dt,  Q[@entity.className].rotation
+        @entity.trigger 'right', dt
 
       targetDistance = Q.distance @entity.p.x, @entity.p.y, target.p.x, target.p.y
       if Math.abs(targetAngle) < 10 and targetDistance < 200
-        @entity.fire()
+        @entity.trigger 'fire'
 
 
   search: (option = null, best = null, _this = @entity) ->

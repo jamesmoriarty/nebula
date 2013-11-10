@@ -11,9 +11,9 @@ Q.component 'aiWander',
 
     targetAngle = @entity.p.angle - Q.angle @entity.p.x, @entity.p.y, @target.p.x, @target.p.y
     if targetAngle > 0
-      @entity.turn dt, -Q[@entity.className].rotation
+      @entity.trigger 'left', dt
     else
-      @entity.turn dt,  Q[@entity.className].rotation
+      @entity.trigger 'right', dt
 
-    @entity.accelerate dt
+    @entity.trigger 'up', dt
 
