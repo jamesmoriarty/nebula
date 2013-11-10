@@ -168,14 +168,13 @@
       }
     },
     up: function(dt) {
-      var vx, vy;
-      vx = this.p.vx;
-      vy = this.p.vy;
+      var distance;
       this.p.vx += Q.offsetX(this.p.angle, Q[this.className].acceleration) * dt;
       this.p.vy += Q.offsetY(this.p.angle, Q[this.className].acceleration) * dt;
       if (Q.distance(this.p.vx, this.p.vy) > Q[this.className].maxVelocity) {
-        this.p.vx = vx;
-        this.p.vy = vy;
+        distance = Q.distance(this.p.vx, this.p.vy);
+        this.p.vx = this.p.vx / distance * Q[this.className].maxVelocity;
+        this.p.vy = this.p.vy / distance * Q[this.className].maxVelocity;
       }
       if (Q._loopFrame % 2 === 0) {
         return this.stage.insert(new Q.Particle({
