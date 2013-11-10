@@ -21,15 +21,13 @@ Q.Sprite.extend 'Ship',
       @p.hp = @p.hp + @p.recharge * dt
 
   up: (dt) ->
-    vx = @p.vx
-    vy = @p.vy
-
     @p.vx += Q.offsetX(@p.angle, Q[@className].acceleration) * dt
     @p.vy += Q.offsetY(@p.angle, Q[@className].acceleration) * dt
 
     if Q.distance(@p.vx, @p.vy) > Q[@className].maxVelocity
-      @p.vx = vx
-      @p.vy = vy
+      distance = Q.distance @p.vx, @p.vy
+      @p.vx = @p.vx / distance * Q[this.className].maxVelocity
+      @p.vy = @p.vy / distance * Q[this.className].maxVelocity
 
     if Q._loopFrame % 2 == 0
       @stage.insert new Q.Particle
