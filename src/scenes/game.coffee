@@ -25,7 +25,7 @@ Q.scene 'Game', (stage) ->
     enemy.on 'destroyed', ->
       won = true
       Q._each Q("SmallShip").items, (ship) ->
-        if ship.p.hp != 0 and ship.p.asset != player.p.asset
+        if ship.p.hp > 0 and ship.p.asset != player.p.asset
           won = false
       if won
         setTimeout ->
