@@ -80,104 +80,6 @@
 
   window.Q = Q;
 
-  Q.component('aiHunter', {
-    added: function() {
-      return this.entity.on("step", this, "step");
-    },
-    step: function(dt) {
-      var target, targetAngle, targetDistance;
-      this.entity.accelerate(dt);
-      if (target = this.search()) {
-        targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
-        if (targetAngle > 0) {
-          this.entity.turn(dt, -Q[this.entity.className].rotation);
-        } else {
-          this.entity.turn(dt, Q[this.entity.className].rotation);
-        }
-        targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
-        if (Math.abs(targetAngle) < 10 && targetDistance < 200) {
-          return this.entity.fire();
-        }
-      }
-    },
-    search: function(option, best, _this) {
-      if (option == null) {
-        option = null;
-      }
-      if (best == null) {
-        best = null;
-      }
-      if (_this == null) {
-        _this = this.entity;
-      }
-      Q._each(Q("SmallShip").items, function(option) {
-        option = {
-          distance: Q.distance(_this.p.x, _this.p.y, option.p.x, option.p.y),
-          asset: option.p.asset,
-          object: option
-        };
-        if (option.object !== _this && option.asset !== _this.p.asset && (!best || best.distance > option.distance)) {
-          return best = option;
-        }
-      });
-      return best && best.object;
-    }
-  });
-
-  Q.component('aiWander', {
-    added: function() {
-      return this.entity.on("step", this, "step");
-    },
-    step: function(dt) {
-      var targetAngle;
-      if (!this.target || 50 > Q.distance(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y)) {
-        this.target = {
-          p: {
-            x: Math.random() * 1000,
-            y: Math.random() * 1000
-          }
-        };
-      }
-      targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y);
-      if (targetAngle > 0) {
-        this.entity.turn(dt, -Q[this.entity.className].rotation);
-      } else {
-        this.entity.turn(dt, Q[this.entity.className].rotation);
-      }
-      return this.entity.accelerate(dt);
-    }
-  });
-
-  Q.component('damageable', {
-    added: function() {
-      this.entity.on("draw", this, "draw");
-      return this.entity.on("hit", this, "collision");
-    },
-    collision: function(col) {
-      var damage;
-      if (damage = col.obj.p.damage) {
-        this.entity.p.hp = this.entity.p.hp - damage;
-      }
-      if (this.entity.p.hp <= 0) {
-        return this.entity.destroy();
-      }
-    },
-    draw: function(ctx) {
-      var metrics, text;
-      if (this.entity.p.hp && this.entity.p.maxHp) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = "400 14px ui";
-        text = "" + (Math.round(this.entity.p.hp / this.entity.p.maxHp * 100)) + "%";
-        metrics = ctx.measureText(text);
-        ctx.fillStyle = "#FFF";
-        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
-        ctx.fillText(text, -metrics.width / 2, -50);
-        return ctx.restore();
-      }
-    }
-  });
-
   Q.component('minimap', {
     added: function() {
       return this.entity.on("draw", this, "draw");
@@ -230,33 +132,18 @@
       return this.entity.on("step", this, "step");
     },
     step: function(dt) {
-      if (Q.inputs['up'] || Q.inputs['action']) {
-        this.entity.accelerate(dt);
-      }
       if (Q.inputs['fire']) {
-        this.entity.fire();
+        this.entity.trigger('fire');
+      }
+      if (Q.inputs['up'] || Q.inputs['action']) {
+        this.entity.trigger('up', dt);
       }
       if (Q.inputs['left']) {
-        this.entity.turn(dt, -Q[this.entity.className].rotation);
+        this.entity.trigger('left', dt);
       }
       if (Q.inputs['right']) {
-        return this.entity.turn(dt, Q[this.entity.className].rotation);
+        return this.entity.trigger('right', dt);
       }
-    }
-  });
-
-  Q.component('ttl', {
-    added: function() {
-      this.startedAt = this.now();
-      return this.entity.on("step", this, "step");
-    },
-    step: function() {
-      if (this.now() > this.startedAt + this.entity.p.ttl) {
-        return this.entity.destroy();
-      }
-    },
-    now: function() {
-      return new Date().getTime();
     }
   });
 
@@ -270,19 +157,17 @@
         recharge: .1
       }, p));
       this.add('2d');
-      return this.add('damageable');
+      this.add('damageable');
+      this.on('up', this, 'up');
+      this.on('left', this, 'left');
+      return this.on('right', this, 'right');
     },
     step: function(dt) {
       if (this.p.recharge * dt + this.p.hp < this.p.maxHp) {
         return this.p.hp = this.p.hp + this.p.recharge * dt;
       }
     },
-    fire: function() {
-      if (this.weapon) {
-        return this.weapon.tryFire(this);
-      }
-    },
-    accelerate: function(dt) {
+    up: function(dt) {
       var vx, vy;
       vx = this.p.vx;
       vy = this.p.vy;
@@ -303,20 +188,12 @@
     },
     turn: function(dt, degree) {
       return this.p.angle += degree * dt;
-    }
-  });
-
-  Q.Weapon = Q.Class.extend("Weapon", {
-    init: function() {
-      return this.lastFired = 0;
     },
-    tryFire: function(from) {
-      var now;
-      now = new Date().getTime();
-      if (now > this.lastFired + Q[this.className].coolDown) {
-        this.fire(from);
-        return this.lastFired = now;
-      }
+    right: function(dt) {
+      return this.turn(dt, Q[this.className].rotation);
+    },
+    left: function(dt) {
+      return this.turn(dt, -Q[this.className].rotation);
     }
   });
 
@@ -347,26 +224,6 @@
       }
       return ctx.drawImage(this.asset(), 0, 0, this.asset().width, this.asset().height, offsetX - this.drawOffset, offsetY - this.drawOffset, Q.width + this.drawOffset * 2, Q.height + this.drawOffset * 2);
     }
-  });
-
-  Q.Weapon.extend("Blaster", {
-    fire: function(from) {
-      var accuracy, angle, velocity;
-      velocity = Q[this.className].velocity;
-      accuracy = Math.floor((Math.random() * 5) - 5);
-      angle = from.p.angle + accuracy;
-      from.stage.insert(new Q.BlasterShot({
-        x: from.p.x + Q.offsetX(from.p.angle, from.p.cx * 2.5),
-        y: from.p.y + Q.offsetY(from.p.angle, from.p.cy * 2.5),
-        vx: from.p.vx + Q.offsetX(angle, velocity),
-        vy: from.p.vy + Q.offsetY(angle, velocity),
-        angle: angle
-      }));
-      return Q.audio.play('blasterShot.mp3');
-    }
-  }, {
-    coolDown: 200,
-    velocity: 750
   });
 
   Q.Sprite.extend('BlasterShot', {
@@ -456,10 +313,9 @@
 
   Q.Ship.extend('SmallShip', {
     init: function(p) {
-      this._super(Q._extend({
+      return this._super(Q._extend({
         asset: "ship" + (Math.floor((Math.random() * 4) + 1)) + ".png"
       }, p));
-      return this.weapon = new Q.Blaster;
     }
   }, {
     acceleration: 100,
@@ -495,6 +351,7 @@
       x: Q.center().x,
       y: Q.center().y
     });
+    player.add("blaster");
     player.add("player");
     player.add("minimap");
     stage.insert(new Q.Background({
@@ -513,6 +370,7 @@
         y: player.p.y + Math.random() * Q.random(-1000, 1000)
       });
       enemy.add("aiHunter");
+      enemy.add("blaster");
       stage.insert(enemy);
       enemy.on('destroyed', function() {
         var won;
@@ -568,6 +426,153 @@
     }, function() {
       return Q.stageScene('Game');
     }));
+  });
+
+  Q.component('aiHunter', {
+    added: function() {
+      return this.entity.on("step", this, "step");
+    },
+    step: function(dt) {
+      var target, targetAngle, targetDistance;
+      this.entity.trigger('up', dt);
+      if (target = this.search()) {
+        targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
+        if (targetAngle > 0) {
+          this.entity.trigger('left', dt);
+        } else {
+          this.entity.trigger('right', dt);
+        }
+        targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
+        if (Math.abs(targetAngle) < 10 && targetDistance < 200) {
+          return this.entity.trigger('fire');
+        }
+      }
+    },
+    search: function(option, best, _this) {
+      if (option == null) {
+        option = null;
+      }
+      if (best == null) {
+        best = null;
+      }
+      if (_this == null) {
+        _this = this.entity;
+      }
+      Q._each(Q("SmallShip").items, function(option) {
+        option = {
+          distance: Q.distance(_this.p.x, _this.p.y, option.p.x, option.p.y),
+          asset: option.p.asset,
+          object: option
+        };
+        if (option.object !== _this && option.asset !== _this.p.asset && (!best || best.distance > option.distance)) {
+          return best = option;
+        }
+      });
+      return best && best.object;
+    }
+  });
+
+  Q.component('aiWander', {
+    added: function() {
+      return this.entity.on("step", this, "step");
+    },
+    step: function(dt) {
+      var targetAngle;
+      if (!this.target || 50 > Q.distance(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y)) {
+        this.target = {
+          p: {
+            x: Math.random() * 1000,
+            y: Math.random() * 1000
+          }
+        };
+      }
+      targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y);
+      if (targetAngle > 0) {
+        this.entity.trigger('left', dt);
+      } else {
+        this.entity.trigger('right', dt);
+      }
+      return this.entity.trigger('up', dt);
+    }
+  });
+
+  Q.component('damageable', {
+    added: function() {
+      this.entity.on("draw", this, "draw");
+      return this.entity.on("hit", this, "collision");
+    },
+    collision: function(col) {
+      var damage;
+      if (damage = col.obj.p.damage) {
+        this.entity.p.hp = this.entity.p.hp - damage;
+      }
+      if (this.entity.p.hp <= 0) {
+        return this.entity.destroy();
+      }
+    },
+    draw: function(ctx) {
+      var metrics, text;
+      if (this.entity.p.hp && this.entity.p.maxHp) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.font = "400 14px ui";
+        text = "" + (Math.round(this.entity.p.hp / this.entity.p.maxHp * 100)) + "%";
+        metrics = ctx.measureText(text);
+        ctx.fillStyle = "#FFF";
+        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
+        ctx.fillText(text, -metrics.width / 2, -50);
+        return ctx.restore();
+      }
+    }
+  });
+
+  Q.component('ttl', {
+    added: function() {
+      this.startedAt = this.now();
+      return this.entity.on("step", this, "step");
+    },
+    step: function() {
+      if (this.now() > this.startedAt + this.entity.p.ttl) {
+        return this.entity.destroy();
+      }
+    },
+    now: function() {
+      return new Date().getTime();
+    }
+  });
+
+  Q.Weapon = Q.component('weapon', {
+    lastFired: 0,
+    added: function() {
+      return this.entity.on('fire', this, 'tryFire');
+    },
+    tryFire: function() {
+      var now;
+      now = new Date().getTime();
+      if (now > this.lastFired + Q[this.className].coolDown) {
+        this.fire();
+        return this.lastFired = now;
+      }
+    }
+  });
+
+  Q.components['blaster'] = Q.Weapon.extend("Blaster", {
+    fire: function() {
+      var angle, velocity;
+      velocity = Q[this.className].velocity;
+      angle = this.entity.p.angle;
+      this.entity.stage.insert(new Q.BlasterShot({
+        x: this.entity.p.x + Q.offsetX(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
+        y: this.entity.p.y + Q.offsetY(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
+        vx: this.entity.p.vx + Q.offsetX(angle, velocity),
+        vy: this.entity.p.vy + Q.offsetY(angle, velocity),
+        angle: angle
+      }));
+      return Q.audio.play('blasterShot.mp3');
+    }
+  }, {
+    coolDown: 200,
+    velocity: 750
   });
 
 }).call(this);
