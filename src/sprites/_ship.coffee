@@ -48,6 +48,16 @@ Q.Sprite.extend 'Ship',
 
   destroyed: (dt) ->
     Q.audio.play 'exp.mp3'
+
+    for n in [1..10]
+      angle = @p.angle + Math.random() * 270
+      @stage.insert new Q.Particle
+        x:  @p.x
+        y:  @p.y
+        vx: @p.vx - Q.offsetX(angle, angle)
+        vy: @p.vy - Q.offsetY(angle, angle)
+        scale: Math.max(Math.random(), 0.3)
+
     @stage.insert new Q.Explosion
       x:  @p.x
       y:  @p.y
