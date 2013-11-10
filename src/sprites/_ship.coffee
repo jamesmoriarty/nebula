@@ -15,6 +15,7 @@ Q.Sprite.extend 'Ship',
     @on 'up', @, 'up'
     @on 'left', @, 'left'
     @on 'right', @, 'right'
+    @on 'destroyed', @, 'destroyed'
 
   step: (dt) ->
     if @p.recharge * dt + @p.hp < @p.maxHp
@@ -44,4 +45,12 @@ Q.Sprite.extend 'Ship',
 
   left: (dt) ->
     @turn dt, -Q[@className].rotation
+
+  destroyed: (dt) ->
+    Q.audio.play 'exp.mp3'
+    @stage.insert new Q.Explosion
+      x:  @p.x
+      y:  @p.y
+      vx: @p.vx
+      vy: @p.vy
 
