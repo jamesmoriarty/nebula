@@ -375,7 +375,7 @@
         var won;
         won = true;
         Q._each(Q("SmallShip").items, function(ship) {
-          if (ship.p.hp !== 0 && ship.p.asset !== player.p.asset) {
+          if (ship.p.hp > 0 && ship.p.asset !== player.p.asset) {
             return won = false;
           }
         });
