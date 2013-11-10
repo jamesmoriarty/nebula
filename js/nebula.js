@@ -120,6 +120,17 @@
         }
       });
       ctx.beginPath();
+      Q("SmallShip").each(function() {
+        var x, y;
+        if (this !== _this && this.p.asset === _this.p.asset) {
+          x = centerX - ((_this.p.x - this.p.x) * scale);
+          y = centerY - ((_this.p.y - this.p.y) * scale);
+          ctx.strokeStyle = "#0F0";
+          ctx.rect(x, y, 1, 1);
+          return ctx.stroke();
+        }
+      });
+      ctx.beginPath();
       ctx.strokeStyle = "#00F";
       ctx.rect(centerX, centerY, 1, 1);
       ctx.stroke();
