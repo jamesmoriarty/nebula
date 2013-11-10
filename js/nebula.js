@@ -207,7 +207,18 @@
       return this.turn(dt, -Q[this.className].rotation);
     },
     destroyed: function(dt) {
+      var angle, n, _i;
       Q.audio.play('exp.mp3');
+      for (n = _i = 1; _i <= 10; n = ++_i) {
+        angle = this.p.angle + Math.random() * 270;
+        this.stage.insert(new Q.Particle({
+          x: this.p.x,
+          y: this.p.y,
+          vx: this.p.vx - Q.offsetX(angle, angle),
+          vy: this.p.vy - Q.offsetY(angle, angle),
+          scale: Math.max(Math.random(), 0.3)
+        }));
+      }
       return this.stage.insert(new Q.Explosion({
         x: this.p.x,
         y: this.p.y,
@@ -601,14 +612,11 @@
         asset: 'particle.png',
         type: Q.SPRITE_NONE,
         collisionMask: Q.SPRITE_NONE,
-        z: 5,
-        scale: 2
+        z: 5
       }, p));
       return this.add('2d');
     },
     step: function(dt) {
-      this.p.vx *= 1 - dt;
-      this.p.vy *= 1 - dt;
       this.p.scale += dt;
       if (this.p.opacity >= 0) {
         return this.p.opacity -= dt;
