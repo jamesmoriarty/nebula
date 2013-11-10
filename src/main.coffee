@@ -21,6 +21,7 @@ Q.load [
     'background.png',
     'star.png',
     'hit.mp3',
+    'exp.mp3',
     'blasterShot.mp3'
   ], ->
     Q.stageScene('Menu')
