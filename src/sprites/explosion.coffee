@@ -6,14 +6,11 @@ Q.Sprite.extend 'Explosion',
         type: Q.SPRITE_NONE
         collisionMask: Q.SPRITE_NONE
         z: 5
-        scale: 2
       , p
 
     @add('2d')
 
   step: (dt) ->
-    @p.vx *= (1 - dt)
-    @p.vy *= (1 - dt)
     @p.scale += dt
     if @p.opacity >= 0
       @p.opacity -= dt
