@@ -8,8 +8,6 @@ Q.component 'damageable',
     if damage = col.obj.p.damage
       @entity.p.hp = @entity.p.hp - damage
     if @entity.p.hp <= 0
-      if col.obj.container
-        Q.stage().follow(col.obj.container, x: true, y: true)
       @entity.destroy()
 
   draw: (ctx) ->

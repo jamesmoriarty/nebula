@@ -4,15 +4,15 @@ Q.component 'player',
     @entity.on "step", @, "step"
 
   step: (dt) ->
-    if Q.inputs['up'] or Q.inputs['action']
-      @entity.accelerate dt
-
     if Q.inputs['fire']
       @entity.trigger 'fire'
 
+    if Q.inputs['up'] or Q.inputs['action']
+      @entity.trigger 'up', dt
+
     if Q.inputs['left']
-      @entity.turn dt, -Q[@entity.className].rotation
+      @entity.trigger 'left', dt
 
     if Q.inputs['right']
-      @entity.turn dt,  Q[@entity.className].rotation
+      @entity.trigger 'right', dt
 

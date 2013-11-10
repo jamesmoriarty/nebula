@@ -9,15 +9,18 @@ Q.Sprite.extend 'Ship',
         recharge: .1
       , p
 
-    @add('2d')
+    @add '2d'
+    @add 'damageable'
 
-    @add('damageable')
+    @on 'up', @, 'up'
+    @on 'left', @, 'left'
+    @on 'right', @, 'right'
 
   step: (dt) ->
     if @p.recharge * dt + @p.hp < @p.maxHp
       @p.hp = @p.hp + @p.recharge * dt
 
-  accelerate: (dt) ->
+  up: (dt) ->
     vx = @p.vx
     vy = @p.vy
 
@@ -37,4 +40,10 @@ Q.Sprite.extend 'Ship',
 
   turn: (dt, degree) ->
     @p.angle += degree * dt
+
+  right: (dt) ->
+    @turn dt,  Q[@className].rotation
+
+  left: (dt) ->
+    @turn dt, -Q[@className].rotation
 
