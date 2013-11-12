@@ -5,6 +5,7 @@ Q.scene 'Game', (stage) ->
   player.add("blaster")
   player.add("player")
   player.add("minimap")
+  player.add("hud")
 
   stage.insert new Q.Background target: player
 
@@ -16,8 +17,8 @@ Q.scene 'Game', (stage) ->
   for [1..6]
     enemy = new Q.SmallShip
       angle: Math.random() * 360
-      x: player.p.x + Math.random() * Q.random(-1000, 1000)
-      y: player.p.y + Math.random() * Q.random(-1000, 1000)
+      x: player.p.x + Math.random() * Q.random(-2000, 2000)
+      y: player.p.y + Math.random() * Q.random(-2000, 2000)
     enemy.add("aiHunter")
     enemy.add("blaster")
     stage.insert enemy
