@@ -80,6 +80,74 @@
 
   window.Q = Q;
 
+  Q.component('aiHunter', {
+    added: function() {
+      return this.entity.on("step", this, "step");
+    },
+    step: function(dt) {
+      var target, targetAngle, targetDistance;
+      this.entity.trigger('up', dt);
+      if (target = this.search()) {
+        targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
+        if (targetAngle > 0) {
+          this.entity.trigger('left', dt);
+        } else {
+          this.entity.trigger('right', dt);
+        }
+        targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
+        if (Math.abs(targetAngle) < 10 && targetDistance < 200) {
+          return this.entity.trigger('fire');
+        }
+      }
+    },
+    search: function(option, best, _this) {
+      if (option == null) {
+        option = null;
+      }
+      if (best == null) {
+        best = null;
+      }
+      if (_this == null) {
+        _this = this.entity;
+      }
+      Q._each(Q("SmallShip").items, function(option) {
+        option = {
+          distance: Q.distance(_this.p.x, _this.p.y, option.p.x, option.p.y),
+          asset: option.p.asset,
+          object: option
+        };
+        if (option.object !== _this && option.asset !== _this.p.asset && (!best || best.distance > option.distance)) {
+          return best = option;
+        }
+      });
+      return best && best.object;
+    }
+  });
+
+  Q.component('aiWander', {
+    added: function() {
+      return this.entity.on("step", this, "step");
+    },
+    step: function(dt) {
+      var targetAngle;
+      if (!this.target || 50 > Q.distance(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y)) {
+        this.target = {
+          p: {
+            x: Math.random() * 1000,
+            y: Math.random() * 1000
+          }
+        };
+      }
+      targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y);
+      if (targetAngle > 0) {
+        this.entity.trigger('left', dt);
+      } else {
+        this.entity.trigger('right', dt);
+      }
+      return this.entity.trigger('up', dt);
+    }
+  });
+
   Q.component('minimap', {
     added: function() {
       return this.entity.on("draw", this, "draw");
@@ -156,6 +224,85 @@
         return this.entity.trigger('right', dt);
       }
     }
+  });
+
+  Q.component('damageable', {
+    added: function() {
+      this.entity.on("draw", this, "draw");
+      return this.entity.on("hit", this, "collision");
+    },
+    collision: function(col) {
+      var damage;
+      if (damage = col.obj.p.damage) {
+        this.entity.p.hp = this.entity.p.hp - damage;
+      }
+      if (this.entity.p.hp <= 0) {
+        return this.entity.destroy();
+      }
+    },
+    draw: function(ctx) {
+      var metrics, text;
+      if (this.entity.p.hp && this.entity.p.maxHp) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.font = "400 14px ui";
+        text = "" + (Math.round(this.entity.p.hp / this.entity.p.maxHp * 100)) + "%";
+        metrics = ctx.measureText(text);
+        ctx.fillStyle = "#FFF";
+        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
+        ctx.fillText(text, -metrics.width / 2, -50);
+        return ctx.restore();
+      }
+    }
+  });
+
+  Q.component('ttl', {
+    added: function() {
+      this.startedAt = this.now();
+      return this.entity.on("step", this, "step");
+    },
+    step: function() {
+      if (this.now() > this.startedAt + this.entity.p.ttl) {
+        return this.entity.destroy();
+      }
+    },
+    now: function() {
+      return new Date().getTime();
+    }
+  });
+
+  Q.Weapon = Q.component('weapon', {
+    lastFired: 0,
+    added: function() {
+      return this.entity.on('fire', this, 'tryFire');
+    },
+    tryFire: function() {
+      var now;
+      now = new Date().getTime();
+      if (now > this.lastFired + Q[this.className].coolDown) {
+        this.fire();
+        return this.lastFired = now;
+      }
+    }
+  });
+
+  Q.components['blaster'] = Q.Weapon.extend("Blaster", {
+    fire: function() {
+      var angle, velocity;
+      velocity = Q[this.className].velocity;
+      angle = this.entity.p.angle;
+      this.entity.stage.insert(new Q.BlasterShot({
+        x: this.entity.p.x + Q.offsetX(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
+        y: this.entity.p.y + Q.offsetY(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
+        vx: this.entity.p.vx + Q.offsetX(angle, velocity),
+        vy: this.entity.p.vy + Q.offsetY(angle, velocity),
+        angle: angle
+      }));
+      return Q.audio.play('blasterShot.mp3');
+    }
+  }, {
+    coolDown: 200,
+    velocity: 750
   });
 
   Q.Sprite.extend('Ship', {
@@ -294,6 +441,32 @@
     }
   });
 
+  Q.Sprite.extend('Explosion', {
+    init: function(p) {
+      this._super(Q._extend({
+        asset: 'particle.png',
+        type: Q.SPRITE_NONE,
+        collisionMask: Q.SPRITE_NONE,
+        z: 5
+      }, p));
+      return this.add('2d');
+    },
+    step: function(dt) {
+      this.p.scale += dt;
+      if (this.p.opacity >= 0) {
+        return this.p.opacity -= dt;
+      } else {
+        return this.destroy();
+      }
+    },
+    draw: function(ctx) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      this._super(ctx);
+      return ctx.restore();
+    }
+  });
+
   Q.Sprite.extend('MenuStar', {
     init: function(p) {
       return this._super(p, {
@@ -385,6 +558,7 @@
     player.add("blaster");
     player.add("player");
     player.add("minimap");
+    player.add("hud");
     stage.insert(new Q.Background({
       target: player
     }));
@@ -397,8 +571,8 @@
     for (_j = 1; _j <= 6; _j++) {
       enemy = new Q.SmallShip({
         angle: Math.random() * 360,
-        x: player.p.x + Math.random() * Q.random(-1000, 1000),
-        y: player.p.y + Math.random() * Q.random(-1000, 1000)
+        x: player.p.x + Math.random() * Q.random(-2000, 2000),
+        y: player.p.y + Math.random() * Q.random(-2000, 2000)
       });
       enemy.add("aiHunter");
       enemy.add("blaster");
@@ -459,176 +633,36 @@
     }));
   });
 
-  Q.component('aiHunter', {
+  Q.component('hud', {
     added: function() {
-      return this.entity.on("step", this, "step");
+      return this.entity.on("postdraw", this, "draw");
     },
-    step: function(dt) {
-      var target, targetAngle, targetDistance;
-      this.entity.trigger('up', dt);
-      if (target = this.search()) {
-        targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
-        if (targetAngle > 0) {
-          this.entity.trigger('left', dt);
-        } else {
-          this.entity.trigger('right', dt);
-        }
-        targetDistance = Q.distance(this.entity.p.x, this.entity.p.y, target.p.x, target.p.y);
-        if (Math.abs(targetAngle) < 10 && targetDistance < 200) {
-          return this.entity.trigger('fire');
-        }
-      }
-    },
-    search: function(option, best, _this) {
-      if (option == null) {
-        option = null;
-      }
-      if (best == null) {
-        best = null;
-      }
-      if (_this == null) {
-        _this = this.entity;
-      }
-      Q._each(Q("SmallShip").items, function(option) {
-        option = {
-          distance: Q.distance(_this.p.x, _this.p.y, option.p.x, option.p.y),
-          asset: option.p.asset,
-          object: option
-        };
-        if (option.object !== _this && option.asset !== _this.p.asset && (!best || best.distance > option.distance)) {
-          return best = option;
+    draw: function(ctx) {
+      var _this;
+      _this = this.entity;
+      return Q("SmallShip").each(function() {
+        var i;
+        if (this !== _this) {
+          if (!this.p.points) {
+            Q._generatePoints(this);
+          }
+          ctx.save();
+          this.matrix.setContextTransform(ctx);
+          ctx.scale(2, 2);
+          ctx.beginPath();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = this.p.asset === _this.p.asset ? "rgba(0,255,0,0.25)" : "rgba(255,0,0,0.25)";
+          ctx.moveTo(this.p.points[0][0], this.p.points[0][1]);
+          i = 0;
+          while (i < this.p.points.length) {
+            ctx.lineTo(this.p.points[i][0], this.p.points[i][1]);
+            i++;
+          }
+          ctx.lineTo(this.p.points[0][0], this.p.points[0][1]);
+          ctx.stroke();
+          return ctx.restore();
         }
       });
-      return best && best.object;
-    }
-  });
-
-  Q.component('aiWander', {
-    added: function() {
-      return this.entity.on("step", this, "step");
-    },
-    step: function(dt) {
-      var targetAngle;
-      if (!this.target || 50 > Q.distance(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y)) {
-        this.target = {
-          p: {
-            x: Math.random() * 1000,
-            y: Math.random() * 1000
-          }
-        };
-      }
-      targetAngle = this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, this.target.p.x, this.target.p.y);
-      if (targetAngle > 0) {
-        this.entity.trigger('left', dt);
-      } else {
-        this.entity.trigger('right', dt);
-      }
-      return this.entity.trigger('up', dt);
-    }
-  });
-
-  Q.component('damageable', {
-    added: function() {
-      this.entity.on("draw", this, "draw");
-      return this.entity.on("hit", this, "collision");
-    },
-    collision: function(col) {
-      var damage;
-      if (damage = col.obj.p.damage) {
-        this.entity.p.hp = this.entity.p.hp - damage;
-      }
-      if (this.entity.p.hp <= 0) {
-        return this.entity.destroy();
-      }
-    },
-    draw: function(ctx) {
-      var metrics, text;
-      if (this.entity.p.hp && this.entity.p.maxHp) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.font = "400 14px ui";
-        text = "" + (Math.round(this.entity.p.hp / this.entity.p.maxHp * 100)) + "%";
-        metrics = ctx.measureText(text);
-        ctx.fillStyle = "#FFF";
-        ctx.rotate(Q.degreesToRadians(-this.entity.p.angle));
-        ctx.fillText(text, -metrics.width / 2, -50);
-        return ctx.restore();
-      }
-    }
-  });
-
-  Q.component('ttl', {
-    added: function() {
-      this.startedAt = this.now();
-      return this.entity.on("step", this, "step");
-    },
-    step: function() {
-      if (this.now() > this.startedAt + this.entity.p.ttl) {
-        return this.entity.destroy();
-      }
-    },
-    now: function() {
-      return new Date().getTime();
-    }
-  });
-
-  Q.Weapon = Q.component('weapon', {
-    lastFired: 0,
-    added: function() {
-      return this.entity.on('fire', this, 'tryFire');
-    },
-    tryFire: function() {
-      var now;
-      now = new Date().getTime();
-      if (now > this.lastFired + Q[this.className].coolDown) {
-        this.fire();
-        return this.lastFired = now;
-      }
-    }
-  });
-
-  Q.components['blaster'] = Q.Weapon.extend("Blaster", {
-    fire: function() {
-      var angle, velocity;
-      velocity = Q[this.className].velocity;
-      angle = this.entity.p.angle;
-      this.entity.stage.insert(new Q.BlasterShot({
-        x: this.entity.p.x + Q.offsetX(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
-        y: this.entity.p.y + Q.offsetY(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
-        vx: this.entity.p.vx + Q.offsetX(angle, velocity),
-        vy: this.entity.p.vy + Q.offsetY(angle, velocity),
-        angle: angle
-      }));
-      return Q.audio.play('blasterShot.mp3');
-    }
-  }, {
-    coolDown: 200,
-    velocity: 750
-  });
-
-  Q.Sprite.extend('Explosion', {
-    init: function(p) {
-      this._super(Q._extend({
-        asset: 'particle.png',
-        type: Q.SPRITE_NONE,
-        collisionMask: Q.SPRITE_NONE,
-        z: 5
-      }, p));
-      return this.add('2d');
-    },
-    step: function(dt) {
-      this.p.scale += dt;
-      if (this.p.opacity >= 0) {
-        return this.p.opacity -= dt;
-      } else {
-        return this.destroy();
-      }
-    },
-    draw: function(ctx) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      this._super(ctx);
-      return ctx.restore();
     }
   });
 
