@@ -148,6 +148,39 @@
     }
   });
 
+  Q.component('hud', {
+    added: function() {
+      return this.entity.on("postdraw", this, "draw");
+    },
+    draw: function(ctx) {
+      var _this;
+      _this = this.entity;
+      return Q("SmallShip").each(function() {
+        var i;
+        if (this !== _this) {
+          if (!this.p.points) {
+            Q._generatePoints(this);
+          }
+          ctx.save();
+          this.matrix.setContextTransform(ctx);
+          ctx.scale(2, 2);
+          ctx.beginPath();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = this.p.asset === _this.p.asset ? "rgba(0,255,0,0.25)" : "rgba(255,0,0,0.25)";
+          ctx.moveTo(this.p.points[0][0], this.p.points[0][1]);
+          i = 0;
+          while (i < this.p.points.length) {
+            ctx.lineTo(this.p.points[i][0], this.p.points[i][1]);
+            i++;
+          }
+          ctx.lineTo(this.p.points[0][0], this.p.points[0][1]);
+          ctx.stroke();
+          return ctx.restore();
+        }
+      });
+    }
+  });
+
   Q.component('minimap', {
     added: function() {
       return this.entity.on("draw", this, "draw");
@@ -170,30 +203,19 @@
       ctx.translate(0, 0);
       ctx.lineWidth = "2";
       ctx.beginPath();
-      ctx.strokeStyle = "#FFF";
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
       ctx.fillStyle = "rgba(255,255,255,0.1)";
       ctx.rect(0, 0, width, height);
       ctx.fill();
       ctx.stroke();
       _this = this.entity;
-      ctx.beginPath();
       Q("SmallShip").each(function() {
         var x, y;
         if (this !== _this) {
+          ctx.beginPath();
+          ctx.strokeStyle = this.p.asset === _this.p.asset ? "#0F0" : "#F00";
           x = centerX - ((_this.p.x - this.p.x) * scale);
           y = centerY - ((_this.p.y - this.p.y) * scale);
-          ctx.strokeStyle = "#F00";
-          ctx.rect(x, y, 1, 1);
-          return ctx.stroke();
-        }
-      });
-      ctx.beginPath();
-      Q("SmallShip").each(function() {
-        var x, y;
-        if (this !== _this && this.p.asset === _this.p.asset) {
-          x = centerX - ((_this.p.x - this.p.x) * scale);
-          y = centerY - ((_this.p.y - this.p.y) * scale);
-          ctx.strokeStyle = "#0F0";
           ctx.rect(x, y, 1, 1);
           return ctx.stroke();
         }
@@ -229,11 +251,11 @@
   Q.component('damageable', {
     added: function() {
       this.entity.on("draw", this, "draw");
-      return this.entity.on("hit", this, "collision");
+      return this.entity.on("sensor", this, "collision");
     },
-    collision: function(col) {
+    collision: function(otherEntity) {
       var damage;
-      if (damage = col.obj.p.damage) {
+      if (damage = otherEntity.p.damage) {
         this.entity.p.hp = this.entity.p.hp - damage;
       }
       if (this.entity.p.hp <= 0) {
@@ -308,6 +330,7 @@
   Q.Sprite.extend('Ship', {
     init: function(p) {
       this._super(Q._extend({
+        sensor: true,
         type: Q.SPRITE_FRIENDLY,
         z: 10,
         hp: 10,
@@ -407,6 +430,7 @@
   Q.Sprite.extend('BlasterShot', {
     init: function(p) {
       this._super(Q._extend({
+        sensor: true,
         type: Q.SPRITE_ENEMY,
         collisionMask: Q.SPRITE_FRIENDLY,
         asset: 'blasterShot.png',
@@ -416,20 +440,18 @@
       }, p));
       this.add('2d');
       this.add('ttl');
-      return this.on('hit', function(col) {
+      return this.on("sensor", function(otherEntity) {
         var vd, _i;
-        if (!col.obj.isA("BlasterShot")) {
-          for (_i = 1; _i <= 5; _i++) {
-            vd = Q.random(-5, 5);
-            this.stage.insert(new Q.Particle({
-              x: col.obj.p.x + vd,
-              y: col.obj.p.y + vd,
-              vx: col.normalX * vd,
-              vy: col.normalY * vd
-            }));
-          }
-          Q.audio.play('hit.mp3');
+        for (_i = 1; _i <= 5; _i++) {
+          vd = Q.random(-5, 5);
+          this.stage.insert(new Q.Particle({
+            x: otherEntity.p.x + vd,
+            y: otherEntity.p.y + vd,
+            vx: vd,
+            vy: vd
+          }));
         }
+        Q.audio.play('hit.mp3');
         return this.destroy();
       });
     },
@@ -631,39 +653,6 @@
     }, function() {
       return Q.stageScene('Game');
     }));
-  });
-
-  Q.component('hud', {
-    added: function() {
-      return this.entity.on("postdraw", this, "draw");
-    },
-    draw: function(ctx) {
-      var _this;
-      _this = this.entity;
-      return Q("SmallShip").each(function() {
-        var i;
-        if (this !== _this) {
-          if (!this.p.points) {
-            Q._generatePoints(this);
-          }
-          ctx.save();
-          this.matrix.setContextTransform(ctx);
-          ctx.scale(2, 2);
-          ctx.beginPath();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = this.p.asset === _this.p.asset ? "rgba(0,255,0,0.25)" : "rgba(255,0,0,0.25)";
-          ctx.moveTo(this.p.points[0][0], this.p.points[0][1]);
-          i = 0;
-          while (i < this.p.points.length) {
-            ctx.lineTo(this.p.points[i][0], this.p.points[i][1]);
-            i++;
-          }
-          ctx.lineTo(this.p.points[0][0], this.p.points[0][1]);
-          ctx.stroke();
-          return ctx.restore();
-        }
-      });
-    }
   });
 
 }).call(this);
