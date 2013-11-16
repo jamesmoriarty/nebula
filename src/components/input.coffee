@@ -1,4 +1,4 @@
-Q.component 'player',
+Q.component 'input',
 
   added: ->
     @entity.on "step", @, "step"
