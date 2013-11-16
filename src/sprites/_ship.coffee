@@ -2,6 +2,7 @@ Q.Sprite.extend 'Ship',
 
   init: (p) ->
     @_super Q._extend
+        sensor: true
         type: Q.SPRITE_FRIENDLY
         z: 10
         hp: 10

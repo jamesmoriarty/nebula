@@ -13,28 +13,19 @@ Q.component 'minimap',
     ctx.lineWidth="2"
 
     ctx.beginPath()
-    ctx.strokeStyle = "#FFF"
+    ctx.strokeStyle = "rgba(255,255,255,0.25)"
     ctx.fillStyle   = "rgba(255,255,255,0.1)"
     ctx.rect 0, 0, width, height
     ctx.fill()
     ctx.stroke()
 
     _this = @entity
-    ctx.beginPath()
     Q("SmallShip").each ->
       if @ != _this
+        ctx.beginPath()
+        ctx.strokeStyle = if @.p.asset == _this.p.asset then "#0F0" else "#F00"
         x = centerX - ((_this.p.x - @p.x) * scale)
         y = centerY - ((_this.p.y - @p.y) * scale)
-        ctx.strokeStyle = "#F00"
-        ctx.rect x, y, 1, 1
-        ctx.stroke()
-
-    ctx.beginPath()
-    Q("SmallShip").each ->
-      if @ != _this and @.p.asset == _this.p.asset
-        x = centerX - ((_this.p.x - @p.x) * scale)
-        y = centerY - ((_this.p.y - @p.y) * scale)
-        ctx.strokeStyle = "#0F0"
         ctx.rect x, y, 1, 1
         ctx.stroke()
 

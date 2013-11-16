@@ -2,10 +2,10 @@ Q.component 'damageable',
 
   added: ->
     @entity.on "draw", @, "draw"
-    @entity.on "hit",  @, "collision"
+    @entity.on "sensor",  @, "collision"
 
-  collision: (col) ->
-    if damage = col.obj.p.damage
+  collision: (otherEntity) ->
+    if damage = otherEntity.p.damage
       @entity.p.hp = @entity.p.hp - damage
     if @entity.p.hp <= 0
       @entity.destroy()
