@@ -7,7 +7,9 @@ Q.Sprite.extend 'Particle',
         collisionMask: Q.SPRITE_NONE
         z: 5
         opacity: .5
+        opacityRate: -.02
         scale: .5
+        scaleRate: -.02
         color: "white"
         radius: 8
       , p
@@ -17,8 +19,10 @@ Q.Sprite.extend 'Particle',
   step: (dt) ->
     @p.vx *= (1 - dt)
     @p.vy *= (1 - dt)
-    if @p.scale >= 0
-      @p.scale -= dt
+
+    if @p.opacity >= 0 or @p.scale >= 0
+      @p.opacity += @p.opacityRate
+      @p.scale += @p.scaleRate
     else
       @.destroy()
 
