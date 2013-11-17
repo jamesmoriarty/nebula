@@ -12,7 +12,7 @@ Q.component 'input',
         @entity.trigger 'right', dt
 
       if Q.inputs['mouse']
-        @entity.trigger 'up', dt
+        @entity.trigger 'fire'
 
     if Q.inputs['fire']
       @entity.trigger 'fire'
