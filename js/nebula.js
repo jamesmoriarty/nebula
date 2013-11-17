@@ -457,16 +457,44 @@
       return this.turn(dt, -Q[this.className].rotation);
     },
     destroyed: function(dt) {
-      var angle, n, _i, _results;
+      var angle, n, _i, _j, _k, _results;
       Q.audio.play('exp.mp3');
-      _results = [];
       for (n = _i = 1; _i <= 10; n = ++_i) {
         angle = this.p.angle + Math.random() * 270;
-        _results.push(this.stage.insert(new Q.Particle({
+        this.stage.insert(new Q.Particle({
+          color: 'grey',
           x: this.p.x,
           y: this.p.y,
-          vx: this.p.vx - Q.offsetX(angle, angle),
-          vy: this.p.vy - Q.offsetY(angle, angle),
+          vx: this.p.vx - Q.offsetX(angle, Math.random() * 50),
+          vy: this.p.vy - Q.offsetY(angle, Math.random() * 50),
+          scale: 1,
+          sclaeRate: .02,
+          radius: 16
+        }));
+      }
+      for (n = _j = 1; _j <= 10; n = ++_j) {
+        angle = this.p.angle + Math.random() * 270;
+        this.stage.insert(new Q.Particle({
+          color: 'orange',
+          x: this.p.x,
+          y: this.p.y,
+          vx: this.p.vx - Q.offsetX(angle, 10),
+          vy: this.p.vy - Q.offsetY(angle, 10),
+          scale: Math.max(Math.random(), 0.3),
+          scale: 1,
+          sclaeRate: .02,
+          radius: 16
+        }));
+      }
+      _results = [];
+      for (n = _k = 1; _k <= 10; n = ++_k) {
+        angle = this.p.angle + Math.random() * 270;
+        _results.push(this.stage.insert(new Q.Particle({
+          color: 'white',
+          x: this.p.x,
+          y: this.p.y,
+          vx: this.p.vx - Q.offsetX(angle, 200),
+          vy: this.p.vy - Q.offsetY(angle, 200),
           scale: Math.max(Math.random(), 0.3)
         })));
       }
