@@ -1,4 +1,5 @@
 Q.scene 'Game', (stage) ->
+
   player = new Q.SmallShip
     x: Q.center().x
     y: Q.center().y

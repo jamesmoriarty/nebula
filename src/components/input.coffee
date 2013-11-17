@@ -4,6 +4,16 @@ Q.component 'input',
     @entity.on "step", @, "step"
 
   step: (dt) ->
+    if Q.mouseEnabled and Q.inputs['mouseX'] and Q.inputs['mouseY']
+      targetAngle = Q.normalizeAngle(@entity.p.angle - Q.angle @entity.p.x, @entity.p.y, Q.inputs['mouseX'], Q.inputs['mouseY'])
+      if targetAngle > 180
+        @entity.trigger 'left', dt
+      else
+        @entity.trigger 'right', dt
+
+      if Q.inputs['mouse']
+        @entity.trigger 'up', dt
+
     if Q.inputs['fire']
       @entity.trigger 'fire'
 
