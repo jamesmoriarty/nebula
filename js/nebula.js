@@ -205,6 +205,38 @@
     }
   });
 
+  Q.component('input', {
+    added: function() {
+      return this.entity.on("step", this, "step");
+    },
+    step: function(dt) {
+      var targetAngle;
+      if (Q.mouseEnabled && Q.inputs['mouseX'] && Q.inputs['mouseY']) {
+        targetAngle = Q.normalizeAngle(this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, Q.inputs['mouseX'], Q.inputs['mouseY']));
+        if (targetAngle > 180) {
+          this.entity.trigger('left', dt);
+        } else {
+          this.entity.trigger('right', dt);
+        }
+        if (Q.inputs['mouse']) {
+          this.entity.trigger('up', dt);
+        }
+      }
+      if (Q.inputs['fire']) {
+        this.entity.trigger('fire');
+      }
+      if (Q.inputs['up'] || Q.inputs['action']) {
+        this.entity.trigger('up', dt);
+      }
+      if (Q.inputs['left']) {
+        this.entity.trigger('left', dt);
+      }
+      if (Q.inputs['right']) {
+        return this.entity.trigger('right', dt);
+      }
+    }
+  });
+
   Q.component('minimap', {
     added: function() {
       return this.entity.on("draw", this, "draw");
@@ -400,6 +432,20 @@
         vx: this.p.vx,
         vy: this.p.vy
       }));
+    }
+  });
+
+  Q.Sprite.extend('Shot', {
+    init: function(p) {
+      this._super(Q._extend({
+        sensor: true,
+        type: Q.SPRITE_ENEMY,
+        collisionMask: Q.SPRITE_FRIENDLY,
+        z: 5,
+        ttl: 1000
+      }, p));
+      this.add('2d');
+      return this.add('ttl');
     }
   });
 
@@ -666,38 +712,6 @@
       }
     });
     return stage.insert(button);
-  });
-
-  Q.component('input', {
-    added: function() {
-      return this.entity.on("step", this, "step");
-    },
-    step: function(dt) {
-      var targetAngle;
-      if (Q.mouseEnabled && Q.inputs['mouseX'] && Q.inputs['mouseY']) {
-        targetAngle = Q.normalizeAngle(this.entity.p.angle - Q.angle(this.entity.p.x, this.entity.p.y, Q.inputs['mouseX'], Q.inputs['mouseY']));
-        if (targetAngle > 180) {
-          this.entity.trigger('left', dt);
-        } else {
-          this.entity.trigger('right', dt);
-        }
-        if (Q.inputs['mouse']) {
-          this.entity.trigger('up', dt);
-        }
-      }
-      if (Q.inputs['fire']) {
-        this.entity.trigger('fire');
-      }
-      if (Q.inputs['up'] || Q.inputs['action']) {
-        this.entity.trigger('up', dt);
-      }
-      if (Q.inputs['left']) {
-        this.entity.trigger('left', dt);
-      }
-      if (Q.inputs['right']) {
-        return this.entity.trigger('right', dt);
-      }
-    }
   });
 
 }).call(this);
