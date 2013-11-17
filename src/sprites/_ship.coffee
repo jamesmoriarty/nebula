@@ -59,9 +59,3 @@ Q.Sprite.extend 'Ship',
         vy: @p.vy - Q.offsetY(angle, angle)
         scale: Math.max(Math.random(), 0.3)
 
-    @stage.insert new Q.Explosion
-      x:  @p.x
-      y:  @p.y
-      vx: @p.vx
-      vy: @p.vy
-

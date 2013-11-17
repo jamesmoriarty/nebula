@@ -6,8 +6,12 @@ Q.Sprite.extend 'Particle',
         type: Q.SPRITE_NONE
         collisionMask: Q.SPRITE_NONE
         z: 5
-        opacity: 0.5
-        scale: 0.4
+        opacity: .5
+        opacityRate: -.02
+        scale: .5
+        scaleRate: -.02
+        color: "white"
+        radius: 8
       , p
 
     @add('2d')
@@ -15,14 +19,19 @@ Q.Sprite.extend 'Particle',
   step: (dt) ->
     @p.vx *= (1 - dt)
     @p.vy *= (1 - dt)
-    if @p.scale >= 0
-      @p.scale -= dt
+
+    if @p.opacity >= 0 or @p.scale >= 0
+      @p.opacity += @p.opacityRate
+      @p.scale += @p.scaleRate
     else
       @.destroy()
 
   draw: (ctx) ->
     ctx.save()
     ctx.globalCompositeOperation = 'lighter'
-    @_super(ctx)
+    ctx.fillStyle = @p.color
+    ctx.beginPath()
+    ctx.arc 0, 0, @p.radius, 0, 2 * Math.PI
+    ctx.fill()
     ctx.restore()
 
