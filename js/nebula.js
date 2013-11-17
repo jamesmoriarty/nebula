@@ -370,6 +370,43 @@
     velocity: 750
   });
 
+  Q.Sprite.extend('Particle', {
+    init: function(p) {
+      this._super(Q._extend({
+        asset: 'particle.png',
+        type: Q.SPRITE_NONE,
+        collisionMask: Q.SPRITE_NONE,
+        z: 5,
+        opacity: .5,
+        opacityRate: -.02,
+        scale: .5,
+        scaleRate: -.02,
+        color: "white",
+        radius: 8
+      }, p));
+      return this.add('2d');
+    },
+    step: function(dt) {
+      this.p.vx *= 1 - dt;
+      this.p.vy *= 1 - dt;
+      if (this.p.opacity >= 0 || this.p.scale >= 0) {
+        this.p.opacity += this.p.opacityRate;
+        return this.p.scale += this.p.scaleRate;
+      } else {
+        return this.destroy();
+      }
+    },
+    draw: function(ctx) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = this.p.color;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.p.radius, 0, 2 * Math.PI);
+      ctx.fill();
+      return ctx.restore();
+    }
+  });
+
   Q.Sprite.extend('Ship', {
     init: function(p) {
       this._super(Q._extend({
@@ -420,24 +457,20 @@
       return this.turn(dt, -Q[this.className].rotation);
     },
     destroyed: function(dt) {
-      var angle, n, _i;
+      var angle, n, _i, _results;
       Q.audio.play('exp.mp3');
+      _results = [];
       for (n = _i = 1; _i <= 10; n = ++_i) {
         angle = this.p.angle + Math.random() * 270;
-        this.stage.insert(new Q.Particle({
+        _results.push(this.stage.insert(new Q.Particle({
           x: this.p.x,
           y: this.p.y,
           vx: this.p.vx - Q.offsetX(angle, angle),
           vy: this.p.vy - Q.offsetY(angle, angle),
           scale: Math.max(Math.random(), 0.3)
-        }));
+        })));
       }
-      return this.stage.insert(new Q.Explosion({
-        x: this.p.x,
-        y: this.p.y,
-        vx: this.p.vx,
-        vy: this.p.vy
-      }));
+      return _results;
     }
   });
 
@@ -513,32 +546,6 @@
     }
   });
 
-  Q.Sprite.extend('Explosion', {
-    init: function(p) {
-      this._super(Q._extend({
-        asset: 'particle.png',
-        type: Q.SPRITE_NONE,
-        collisionMask: Q.SPRITE_NONE,
-        z: 5
-      }, p));
-      return this.add('2d');
-    },
-    step: function(dt) {
-      this.p.scale += dt;
-      if (this.p.opacity >= 0) {
-        return this.p.opacity -= dt;
-      } else {
-        return this.destroy();
-      }
-    },
-    draw: function(ctx) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      this._super(ctx);
-      return ctx.restore();
-    }
-  });
-
   Q.Sprite.extend('MenuStar', {
     init: function(p) {
       return this._super(p, {
@@ -555,35 +562,6 @@
         this.p.x = Math.random() * Q.width;
       }
       return this.p.y += dt * Math.pow(100, this.p.scale);
-    }
-  });
-
-  Q.Sprite.extend('Particle', {
-    init: function(p) {
-      this._super(Q._extend({
-        asset: 'particle.png',
-        type: Q.SPRITE_NONE,
-        collisionMask: Q.SPRITE_NONE,
-        z: 5,
-        opacity: 0.5,
-        scale: 0.4
-      }, p));
-      return this.add('2d');
-    },
-    step: function(dt) {
-      this.p.vx *= 1 - dt;
-      this.p.vy *= 1 - dt;
-      if (this.p.scale >= 0) {
-        return this.p.scale -= dt;
-      } else {
-        return this.destroy();
-      }
-    },
-    draw: function(ctx) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      this._super(ctx);
-      return ctx.restore();
     }
   });
 
