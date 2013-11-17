@@ -70,6 +70,12 @@
 
   Q.clearColor = "#000";
 
+  Q.input.keys[87] = 'up';
+
+  Q.input.keys[65] = 'left';
+
+  Q.input.keys[68] = 'right';
+
   Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'particle.png', 'blasterShot.png', 'background.png', 'star.png', 'hit.mp3', 'exp.mp3', 'blasterShot.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
@@ -219,7 +225,7 @@
           this.entity.trigger('right', dt);
         }
         if (Q.inputs['mouse']) {
-          this.entity.trigger('up', dt);
+          this.entity.trigger('fire');
         }
       }
       if (Q.inputs['fire']) {
