@@ -7,6 +7,7 @@ Q.component 'damageable',
   collision: (otherEntity) ->
     if damage = otherEntity.p.damage
       @entity.p.hp = @entity.p.hp - damage
+      otherEntity.p.damage = 0
     if @entity.p.hp <= 0
       @entity.destroy()
 

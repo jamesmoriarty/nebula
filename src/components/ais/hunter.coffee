@@ -8,14 +8,14 @@ Q.component 'aiHunter',
 
     if target = @search()
 
-      targetAngle = @entity.p.angle - Q.angle @entity.p.x, @entity.p.y, target.p.x, target.p.y
-      if targetAngle > 0
+      targetAngle = Q.normalizeAngle(@entity.p.angle - Q.angle @entity.p.x, @entity.p.y, target.p.x, target.p.y)
+      if targetAngle > 180
         @entity.trigger 'left', dt
       else
         @entity.trigger 'right', dt
 
       targetDistance = Q.distance @entity.p.x, @entity.p.y, target.p.x, target.p.y
-      if Math.abs(targetAngle) < 10 and targetDistance < 200
+      if targetAngle > 170 and targetAngle < 190 and targetDistance < 200
         @entity.trigger 'fire'
 
 

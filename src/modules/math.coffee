@@ -5,18 +5,18 @@ Quintus.Math = (Q) ->
 
   Q.normalizeAngle = (angle) ->
     result = angle % 360
+    loop
+      break if result > 0
+      result = result + 360
 
-    if result < 0
-      result + 360
-    else
-      result
+    result
 
   Q.angle = (fromX, fromY, toX, toY) ->
     distX   = toX - fromX
     distY   = toY - fromY
     radians = Math.atan2 distY, distX
 
-    90 + Q.normalizeAngle(Q.radiansToDegrees(radians))
+    Q.radiansToDegrees(radians) - 90
 
   Q.distance = (fromX, fromY, toX = 0, toY = 0) ->
     Math.sqrt Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2)

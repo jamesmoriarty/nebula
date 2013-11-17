@@ -31,6 +31,23 @@ Q.load [
 
 window.Q = Q
 
+document.body.onmousedown = (event) ->
+  Q.inputs['mouse']  = true
+
+document.body.onmouseup = (event) ->
+  delete Q.inputs['mouse']
+
+last = {}
+document.body.onmousemove = (event) ->
+  last.x = event.x
+  last.y = event.y
+
+setInterval ->
+    if last.x and last.y
+      Q.inputs['mouseX'] = Q.canvasToStageX last.x, Q.stage()
+      Q.inputs['mouseY'] = Q.canvasToStageY last.y, Q.stage()
+  , 50
+
 #document.addEventListener "click", ->
 #  e = document.getElementById("quintus")
 #  if e.webkitRequestFullScreen
