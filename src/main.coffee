@@ -8,8 +8,12 @@ Q = Quintus()                                                           # create
 Q.gravityY = 0
 Q.gravityX = 0
 Q.clearColor = "#000"
-#Q.debug = true
-#Q.debugFill = true
+# Q.debug = true
+# Q.debugFill = true
+
+Q.input.keys[87] = 'up'
+Q.input.keys[65] = 'left'
+Q.input.keys[68] = 'right'
 
 Q.load [
     'ship1.png',
