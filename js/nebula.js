@@ -389,8 +389,12 @@
     step: function(dt) {
       this.p.vx *= 1 - dt;
       this.p.vy *= 1 - dt;
-      if (this.p.opacity >= 0 || this.p.scale >= 0) {
+      if (this.p.opacity >= 0) {
         this.p.opacity += this.p.opacityRate;
+      } else {
+        this.destroy();
+      }
+      if (this.p.scale >= 0) {
         return this.p.scale += this.p.scaleRate;
       } else {
         return this.destroy();
@@ -459,16 +463,17 @@
     destroyed: function(dt) {
       var angle, n, _i, _j, _k, _results;
       Q.audio.play('exp.mp3');
-      for (n = _i = 1; _i <= 10; n = ++_i) {
+      for (n = _i = 1; _i <= 30; n = ++_i) {
         angle = this.p.angle + Math.random() * 270;
         this.stage.insert(new Q.Particle({
-          color: 'grey',
+          color: '#111',
           x: this.p.x,
           y: this.p.y,
           vx: this.p.vx - Q.offsetX(angle, Math.random() * 50),
           vy: this.p.vy - Q.offsetY(angle, Math.random() * 50),
           scale: 1,
           sclaeRate: .02,
+          opacityRate: -.001,
           radius: 16
         }));
       }
