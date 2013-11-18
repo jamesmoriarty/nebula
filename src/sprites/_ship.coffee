@@ -50,16 +50,17 @@ Q.Sprite.extend 'Ship',
   destroyed: (dt) ->
     Q.audio.play 'exp.mp3'
 
-    for n in [1..10]
+    for n in [1..30]
       angle = @p.angle + Math.random() * 270
       @stage.insert new Q.Particle
-        color: 'grey'
+        color: '#111'
         x:  @p.x
         y:  @p.y
         vx: @p.vx - Q.offsetX(angle, Math.random() * 50)
         vy: @p.vy - Q.offsetY(angle, Math.random() * 50)
         scale: 1
         sclaeRate: .02
+        opacityRate: -.001
         radius: 16
 
     for n in [1..10]

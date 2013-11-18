@@ -20,11 +20,15 @@ Q.Sprite.extend 'Particle',
     @p.vx *= (1 - dt)
     @p.vy *= (1 - dt)
 
-    if @p.opacity >= 0 or @p.scale >= 0
+    if @p.opacity >= 0
       @p.opacity += @p.opacityRate
+    else
+      @destroy()
+
+    if @p.scale >= 0
       @p.scale += @p.scaleRate
     else
-      @.destroy()
+      @destroy()
 
   draw: (ctx) ->
     ctx.save()
