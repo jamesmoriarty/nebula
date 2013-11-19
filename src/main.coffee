@@ -22,11 +22,13 @@ Q.load [
     'ship4.png',
     'particle.png',
     'blasterShot.png',
+    'blasterShot.mp3',
+    'rocketShot.png',
+    'rocketShot.mp3'
     'background.png',
     'star.png',
     'hit.mp3',
     'exp.mp3',
-    'blasterShot.mp3'
   ], ->
     Q.stageScene('Menu')
   , progressCallback: (loaded, total) ->
