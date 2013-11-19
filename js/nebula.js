@@ -51,11 +51,43 @@
     Q.random = function(min, max) {
       return Math.random() * (max - min) + min;
     };
-    return Q.center = function() {
+    Q.center = function() {
       return {
         x: Q.width / 2,
         y: Q.height / 2
       };
+    };
+    Q.insideViewport = function(entity) {
+      var polygon, stage;
+      stage = Q.stage();
+      polygon = [
+        {
+          x: Q.canvasToStageX(0, stage),
+          y: Q.canvasToStageY(0, stage)
+        }, {
+          x: Q.canvasToStageX(Q.width, stage),
+          y: Q.canvasToStageY(0, stage)
+        }, {
+          x: Q.canvasToStageX(Q.width, stage),
+          y: Q.canvasToStageY(Q.height, stage)
+        }, {
+          x: Q.canvasToStageX(0, stage),
+          y: Q.canvasToStageY(Q.height, stage)
+        }
+      ];
+      return Q.insidePolygon(polygon, entity.p);
+    };
+    return Q.insidePolygon = function(poly, pt) {
+      var c, i, j, l;
+      c = false;
+      i = -1;
+      l = poly.length;
+      j = l - 1;
+      while (++i < l) {
+        ((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y)) && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x) && (c = !c);
+        j = i;
+      }
+      return c;
     };
   };
 
@@ -370,6 +402,27 @@
     velocity: 750
   });
 
+  Q.components['blaster'] = Q.Weapon.extend("RocketLauncher", {
+    fire: function() {
+      var angle, velocity;
+      velocity = Q[this.className].velocity;
+      angle = this.entity.p.angle;
+      this.entity.stage.insert(new Q.RocketShot({
+        x: this.entity.p.x + Q.offsetX(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
+        y: this.entity.p.y + Q.offsetY(angle, Math.max(this.entity.p.w, this.entity.p.h) * 1.3),
+        vx: this.entity.p.vx,
+        vy: this.entity.p.vy,
+        ax: Q.offsetX(angle, 1000),
+        ay: Q.offsetY(angle, 1000),
+        angle: angle
+      }));
+      return Q.audio.play('rocketShot.mp3');
+    }
+  }, {
+    coolDown: 1000,
+    velocity: 500
+  });
+
   Q.Sprite.extend('Particle', {
     init: function(p) {
       this._super(Q._extend({
@@ -387,6 +440,9 @@
       return this.add('2d');
     },
     step: function(dt) {
+      if (!Q.insideViewport(this)) {
+        this.destroy();
+      }
       this.p.vx *= 1 - dt;
       this.p.vy *= 1 - dt;
       if (this.p.opacity >= 0) {
@@ -557,8 +613,9 @@
         damage: 1
       }, p));
       return this.on("sensor", function(otherEntity) {
-        var _i;
-        for (_i = 1; _i <= 5; _i++) {
+        var n, _i;
+        n = Q.random(1, 3);
+        for (_i = 1; 1 <= n ? _i <= n : _i >= n; 1 <= n ? _i++ : _i--) {
           this.stage.insert(new Q.Particle({
             x: otherEntity.p.x,
             y: otherEntity.p.y,
@@ -594,6 +651,72 @@
         this.p.x = Math.random() * Q.width;
       }
       return this.p.y += dt * Math.pow(100, this.p.scale);
+    }
+  });
+
+  Q.Shot.extend('RocketShot', {
+    init: function(p) {
+      this._super(Q._extend({
+        asset: 'rocketShot.png',
+        damage: 7.5,
+        ttl: 5000
+      }, p));
+      this.on("step", this, "step");
+      return this.on("hit", function(col) {
+        var angle, n, otherEntity, _i, _j, _k;
+        otherEntity = col.obj;
+        Q.audio.play('exp.mp3');
+        for (n = _i = 1; _i <= 30; n = ++_i) {
+          angle = this.p.angle + Math.random() * 270;
+          this.stage.insert(new Q.Particle({
+            color: '#111',
+            x: this.p.x,
+            y: this.p.y,
+            vx: this.p.vx - Q.offsetX(angle, Math.random() * 50),
+            vy: this.p.vy - Q.offsetY(angle, Math.random() * 50),
+            scale: 1,
+            sclaeRate: .02,
+            opacityRate: -.001,
+            radius: 16
+          }));
+        }
+        for (n = _j = 1; _j <= 10; n = ++_j) {
+          angle = this.p.angle + Math.random() * 270;
+          this.stage.insert(new Q.Particle({
+            color: 'orange',
+            x: this.p.x,
+            y: this.p.y,
+            vx: this.p.vx - Q.offsetX(angle, 10),
+            vy: this.p.vy - Q.offsetY(angle, 10),
+            scale: Math.max(Math.random(), 0.3),
+            scale: 1,
+            sclaeRate: .02,
+            radius: 16
+          }));
+        }
+        for (n = _k = 1; _k <= 10; n = ++_k) {
+          angle = this.p.angle + Math.random() * 270;
+          this.stage.insert(new Q.Particle({
+            color: 'white',
+            x: this.p.x,
+            y: this.p.y,
+            vx: this.p.vx - Q.offsetX(angle, 200),
+            vy: this.p.vy - Q.offsetY(angle, 200),
+            scale: Math.max(Math.random(), 0.3)
+          }));
+        }
+        return this.destroy();
+      });
+    },
+    step: function() {
+      if (Q._loopFrame % 2 === 0) {
+        return this.stage.insert(new Q.Particle({
+          x: this.p.x,
+          y: this.p.y,
+          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 75)),
+          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 75))
+        }));
+      }
     }
   });
 
