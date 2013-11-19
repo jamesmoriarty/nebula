@@ -633,8 +633,9 @@
   });
 
   Q.scene('Game', function(stage) {
-    var enemy, player, _i, _j, _ref;
+    var enemy, n, player, radius, theta, x, y, _i, _j, _ref;
     player = new Q.SmallShip({
+      angle: Math.random() * 360,
       x: Q.center().x,
       y: Q.center().y
     });
@@ -651,11 +652,15 @@
       }));
     }
     stage.insert(player);
-    for (_j = 1; _j <= 6; _j++) {
+    for (n = _j = 1; _j <= 6; n = ++_j) {
+      radius = 1000;
+      theta = Math.PI * 2 / 6 * n;
+      x = player.p.x + radius * Math.cos(theta);
+      y = player.p.y + radius * Math.sin(theta);
       enemy = new Q.SmallShip({
         angle: Math.random() * 360,
-        x: player.p.x + Math.random() * Q.random(-2000, 2000),
-        y: player.p.y + Math.random() * Q.random(-2000, 2000)
+        x: x,
+        y: y
       });
       enemy.add("aiHunter");
       enemy.add("blaster");
