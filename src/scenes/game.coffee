@@ -1,8 +1,10 @@
 Q.scene 'Game', (stage) ->
 
   player = new Q.SmallShip
-    x: Q.center().x
-    y: Q.center().y
+    angle: Math.random() * 360
+    x:     Q.center().x
+    y:     Q.center().y
+
   player.add("blaster")
   player.add("input")
   player.add("minimap")
@@ -15,13 +17,20 @@ Q.scene 'Game', (stage) ->
 
   stage.insert player
 
-  for [1..6]
-    enemy = new Q.SmallShip
+  for n in [1..6]
+    radius = 1000
+    theta  = Math.PI * 2 / 6 * n
+    x      = player.p.x + radius * Math.cos theta
+    y      = player.p.y + radius * Math.sin theta
+
+    enemy  = new Q.SmallShip
       angle: Math.random() * 360
-      x: player.p.x + Math.random() * Q.random(-2000, 2000)
-      y: player.p.y + Math.random() * Q.random(-2000, 2000)
+      x:     x
+      y:     y
+
     enemy.add("aiHunter")
     enemy.add("blaster")
+
     stage.insert enemy
 
     enemy.on 'destroyed', ->
