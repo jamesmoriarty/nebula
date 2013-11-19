@@ -557,14 +557,13 @@
         damage: 1
       }, p));
       return this.on("sensor", function(otherEntity) {
-        var vd, _i;
+        var _i;
         for (_i = 1; _i <= 5; _i++) {
-          vd = Q.random(-5, 5);
           this.stage.insert(new Q.Particle({
-            x: otherEntity.p.x + vd,
-            y: otherEntity.p.y + vd,
-            vx: vd,
-            vy: vd
+            x: otherEntity.p.x,
+            y: otherEntity.p.y,
+            vx: Q.random(-50, 50),
+            vy: Q.random(-50, 50)
           }));
         }
         Q.audio.play('hit.mp3');
