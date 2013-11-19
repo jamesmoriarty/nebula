@@ -17,6 +17,8 @@ Q.Sprite.extend 'Particle',
     @add('2d')
 
   step: (dt) ->
+    @destroy() unless Q.insideViewport @
+
     @p.vx *= (1 - dt)
     @p.vy *= (1 - dt)
 
