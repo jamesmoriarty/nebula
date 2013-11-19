@@ -7,7 +7,8 @@ Q.Shot.extend 'BlasterShot',
       , p
 
     @on "sensor", (otherEntity) ->
-      for [1..5]
+      n = Q.random 1, 3
+      for [1..n]
         @stage.insert new Q.Particle
           x:  otherEntity.p.x
           y:  otherEntity.p.y
