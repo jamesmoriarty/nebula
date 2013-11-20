@@ -3,7 +3,19 @@ Q.component 'minimap',
   added: ->
     @entity.on "draw", @, "draw"
 
-  draw: (ctx, width = 100, height = 100, scale = .01) ->
+  draw: (ctx, width = 100, height = 100) ->
+    maxX = 0
+    maxY = 0
+
+    _this = @entity
+    Q("SmallShip").each ->
+      diffX = Math.abs(_this.p.x - this.p.x)
+      maxX  = diffX if diffX > maxX
+      diffY = Math.abs(_this.p.y - this.p.y)
+      maxY  = diffY if diffY > maxY
+
+    scale = Math.min(width / maxX, height / maxY) / 2.1
+
     centerX = width  / 2
     centerY = height / 2
 
