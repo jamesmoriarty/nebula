@@ -7,9 +7,9 @@ Q.Sprite.extend 'Particle',
         collisionMask: Q.SPRITE_NONE
         z: 5
         opacity: .5
-        opacityRate: -.02
+        opacityRate: -.03
         scale: .5
-        scaleRate: -.02
+        scaleRate: -.03
         color: "white"
         radius: 8
       , p
