@@ -137,8 +137,10 @@
 
   setInterval(function() {
     if (last.x && last.y) {
-      Q.inputs['mouseX'] = Q.canvasToStageX(last.x, Q.stage());
-      return Q.inputs['mouseY'] = Q.canvasToStageY(last.y, Q.stage());
+      if (Q.stage()) {
+        Q.inputs['mouseX'] = Q.canvasToStageX(last.x, Q.stage());
+        return Q.inputs['mouseY'] = Q.canvasToStageY(last.y, Q.stage());
+      }
     }
   }, 50);
 
