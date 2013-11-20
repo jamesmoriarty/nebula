@@ -108,7 +108,7 @@
 
   Q.input.keys[68] = 'right';
 
-  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'ship4.png', 'particle.png', 'blasterShot.png', 'blasterShot.mp3', 'rocketShot.png', 'rocketShot.mp3', 'background.png', 'star.png', 'hit.mp3', 'exp.mp3'], function() {
+  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'particle.png', 'blasterShot.png', 'blasterShot.mp3', 'rocketShot.png', 'rocketShot.mp3', 'background.png', 'star.png', 'hit.mp3', 'exp.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -412,9 +412,9 @@
         collisionMask: Q.SPRITE_NONE,
         z: 5,
         opacity: .5,
-        opacityRate: -.02,
+        opacityRate: -.03,
         scale: .5,
-        scaleRate: -.02,
+        scaleRate: -.03,
         color: "white",
         radius: 8
       }, p));
@@ -479,14 +479,12 @@
         this.p.vx = this.p.vx / distance * Q[this.className].maxVelocity;
         this.p.vy = this.p.vy / distance * Q[this.className].maxVelocity;
       }
-      if (Q._loopFrame % 2 === 0) {
-        return this.stage.insert(new Q.Particle({
-          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
-          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
-          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.1, 75)),
-          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.1, 75))
-        }));
-      }
+      return this.stage.insert(new Q.Particle({
+        x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+        y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
+        vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.2, 100)),
+        vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.2, 100))
+      }));
     },
     turn: function(dt, degree) {
       return this.p.angle += degree * dt;
@@ -537,7 +535,9 @@
           y: this.p.y,
           vx: this.p.vx - Q.offsetX(angle, 200),
           vy: this.p.vy - Q.offsetY(angle, 200),
-          scale: Math.max(Math.random(), 0.3)
+          scale: Math.max(Math.random(), 0.3),
+          scaleRate: -.01,
+          opacityRate: -.01
         })));
       }
       return _results;
@@ -638,7 +638,7 @@
   Q.Ship.extend('SmallShip', {
     init: function(p) {
       return this._super(Q._extend({
-        asset: "ship" + (Math.floor((Math.random() * 4) + 1)) + ".png"
+        asset: "ship" + (Math.floor((Math.random() * 3) + 1)) + ".png"
       }, p));
     }
   }, {
