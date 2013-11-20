@@ -50,8 +50,9 @@ document.body.onmousemove = (event) ->
 
 setInterval ->
     if last.x and last.y
-      Q.inputs['mouseX'] = Q.canvasToStageX last.x, Q.stage()
-      Q.inputs['mouseY'] = Q.canvasToStageY last.y, Q.stage()
+      if Q.stage()
+        Q.inputs['mouseX'] = Q.canvasToStageX last.x, Q.stage()
+        Q.inputs['mouseY'] = Q.canvasToStageY last.y, Q.stage()
   , 50
 
 #document.addEventListener "click", ->
