@@ -31,12 +31,11 @@ Q.Sprite.extend 'Ship',
       @p.vx = @p.vx / distance * Q[this.className].maxVelocity
       @p.vy = @p.vy / distance * Q[this.className].maxVelocity
 
-    if Q._loopFrame % 2 == 0
-      @stage.insert new Q.Particle
-        x:  @p.x -  Q.offsetX(@p.angle, @p.cx)
-        y:  @p.y -  Q.offsetY(@p.angle, @p.cy)
-        vx: @p.vx - Q.offsetX(@p.angle, Math.max(@p.vx * 0.1, 75))
-        vy: @p.vy - Q.offsetY(@p.angle, Math.max(@p.vy * 0.1, 75))
+    @stage.insert new Q.Particle
+      x:  @p.x -  Q.offsetX(@p.angle, @p.cx)
+      y:  @p.y -  Q.offsetY(@p.angle, @p.cy)
+      vx: @p.vx - Q.offsetX(@p.angle, Math.max(@p.vx * 0.2, 100))
+      vy: @p.vy - Q.offsetY(@p.angle, Math.max(@p.vy * 0.2, 100))
 
   turn: (dt, degree) ->
     @p.angle += degree * dt
@@ -85,4 +84,6 @@ Q.Sprite.extend 'Ship',
         vx: @p.vx - Q.offsetX(angle, 200)
         vy: @p.vy - Q.offsetY(angle, 200)
         scale: Math.max(Math.random(), 0.3)
+        scaleRate: -.01
+        opacityRate: -.01
 

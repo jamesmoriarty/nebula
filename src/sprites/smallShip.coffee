@@ -2,7 +2,7 @@ Q.Ship.extend 'SmallShip',
 
   init: (p) ->
     @_super Q._extend
-        asset: "ship#{Math.floor((Math.random()*4)+1);}.png"
+        asset: "ship#{Math.floor((Math.random()*3)+1);}.png"
       , p
 ,
   acceleration: 100
