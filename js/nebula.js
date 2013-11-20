@@ -281,17 +281,29 @@
     added: function() {
       return this.entity.on("draw", this, "draw");
     },
-    draw: function(ctx, width, height, scale) {
-      var centerX, centerY, _this;
+    draw: function(ctx, width, height) {
+      var centerX, centerY, maxX, maxY, scale, _this;
       if (width == null) {
         width = 100;
       }
       if (height == null) {
         height = 100;
       }
-      if (scale == null) {
-        scale = .01;
-      }
+      maxX = 0;
+      maxY = 0;
+      _this = this.entity;
+      Q("SmallShip").each(function() {
+        var diffX, diffY;
+        diffX = Math.abs(_this.p.x - this.p.x);
+        if (diffX > maxX) {
+          maxX = diffX;
+        }
+        diffY = Math.abs(_this.p.y - this.p.y);
+        if (diffY > maxY) {
+          return maxY = diffY;
+        }
+      });
+      scale = Math.min(width / maxX, height / maxY) / 2.1;
       centerX = width / 2;
       centerY = height / 2;
       ctx.save();
