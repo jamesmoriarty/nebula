@@ -58,9 +58,9 @@
       };
     };
     Q.insideViewport = function(entity) {
-      var polygon, stage;
+      var points, stage;
       stage = Q.stage();
-      polygon = [
+      points = [
         {
           x: Q.canvasToStageX(0, stage),
           y: Q.canvasToStageY(0, stage)
@@ -75,16 +75,29 @@
           y: Q.canvasToStageY(Q.height, stage)
         }
       ];
-      return Q.insidePolygon(polygon, entity.p);
+      return Q.insidePolygon(points, entity.p);
     };
-    return Q.insidePolygon = function(poly, pt) {
-      var c, i, j, l;
+    return Q.insidePolygon = function(points, p) {
+      var c, i, j, l, maxX, maxY, minX, minY, xs, ys;
+      xs = Q._map(points, function() {
+        return this.x;
+      });
+      minX = Math.min.apply(this, xs);
+      maxX = Math.max.apply(this, xs);
+      ys = Q._map(points, function() {
+        return this.y;
+      });
+      minY = Math.min.apply(this, ys);
+      maxY = Math.max.apply(this, ys);
+      if (p.x < minX || p.x > maxX || p.y < minY || p.y > maxY) {
+        return false;
+      }
       c = false;
       i = -1;
-      l = poly.length;
+      l = points.length;
       j = l - 1;
       while (++i < l) {
-        ((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y)) && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x) && (c = !c);
+        ((points[i].y <= p.y && p.y < points[j].y) || (points[j].y <= p.y && p.y < points[i].y)) && (p.x < (points[j].x - points[i].x) * (p.y - points[i].y) / (points[j].y - points[i].y) + points[i].x) && (c = !c);
         j = i;
       }
       return c;
@@ -282,12 +295,12 @@
       return this.entity.on("draw", this, "draw");
     },
     draw: function(ctx, width, height) {
-      var centerX, centerY, maxX, maxY, scale, _this;
+      var centerX, centerY, maxX, maxY, metrics, scale, text, _this;
       if (width == null) {
-        width = 100;
+        width = 150;
       }
       if (height == null) {
-        height = 100;
+        height = 150;
       }
       maxX = 0;
       maxY = 0;
@@ -328,6 +341,14 @@
           return ctx.stroke();
         }
       });
+      ctx.save();
+      ctx.beginPath();
+      ctx.font = "400 14px ui";
+      text = "SCALE: x1/" + (Math.round(1 / scale));
+      metrics = ctx.measureText(text);
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.fillText(text, width / 2 - metrics.width / 2, height + 5);
+      ctx.restore();
       ctx.beginPath();
       ctx.strokeStyle = "#00F";
       ctx.rect(centerX, centerY, 1, 1);
@@ -491,12 +512,14 @@
         this.p.vx = this.p.vx / distance * Q[this.className].maxVelocity;
         this.p.vy = this.p.vy / distance * Q[this.className].maxVelocity;
       }
-      return this.stage.insert(new Q.Particle({
-        x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
-        y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
-        vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.2, 100)),
-        vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.2, 100))
-      }));
+      if (Q._loopFrame % 2 === 0) {
+        return this.stage.insert(new Q.Particle({
+          x: this.p.x - Q.offsetX(this.p.angle, this.p.cx),
+          y: this.p.y - Q.offsetY(this.p.angle, this.p.cy),
+          vx: this.p.vx - Q.offsetX(this.p.angle, Math.max(this.p.vx * 0.2, 100)),
+          vy: this.p.vy - Q.offsetY(this.p.angle, Math.max(this.p.vy * 0.2, 100))
+        }));
+      }
     },
     turn: function(dt, degree) {
       return this.p.angle += degree * dt;
