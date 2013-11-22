@@ -3,7 +3,7 @@ Q.component 'minimap',
   added: ->
     @entity.on "draw", @, "draw"
 
-  draw: (ctx, width = 100, height = 100) ->
+  draw: (ctx, width = 150, height = 150) ->
     maxX = 0
     maxY = 0
 
@@ -40,6 +40,15 @@ Q.component 'minimap',
         y = centerY - ((_this.p.y - @p.y) * scale)
         ctx.rect x, y, 1, 1
         ctx.stroke()
+
+    ctx.save()
+    ctx.beginPath()
+    ctx.font      = "400 14px ui"
+    text          = "SCALE: x1/#{Math.round(1/scale)}"
+    metrics       = ctx.measureText(text)
+    ctx.fillStyle = "rgba(255,255,255,0.5)"
+    ctx.fillText text, width / 2 - metrics.width / 2, height + 5
+    ctx.restore()
 
     ctx.beginPath()
     ctx.strokeStyle = "#00F"
