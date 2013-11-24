@@ -22,10 +22,12 @@ Q.load [
     'particle.png',
     'blasterShot.png',
     'blasterShot.mp3',
+    'muzzleShot.mp3',
     'rocketShot.png',
     'rocketShot.mp3'
     'background.png',
     'star.png',
+    'shieldFlare.png',
     'hit.mp3',
     'exp.mp3',
   ], ->
