@@ -15,6 +15,13 @@ Q.Shot.extend 'BlasterShot',
           vx: Q.random -50, 50
           vy: Q.random -50, 50
 
+        @stage.insert new Q.ShieldFlare
+          x:  otherEntity.p.x
+          y:  otherEntity.p.y
+          vx: otherEntity.vx
+          vy: otherEntity.vy
+          angle: @p.angle - 180
+
       Q.audio.play 'hit.mp3'
       @destroy()
 
