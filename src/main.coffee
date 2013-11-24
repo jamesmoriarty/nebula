@@ -26,6 +26,7 @@ Q.load [
     'rocketShot.mp3'
     'background.png',
     'star.png',
+    'shieldFlare.png',
     'hit.mp3',
     'exp.mp3',
   ], ->
