@@ -5,7 +5,8 @@ Q.scene 'Game', (stage) ->
     x:     Q.center().x
     y:     Q.center().y
 
-  player.add("blaster")
+  # player.add("blaster")
+  player.add("machineGun")
   player.add("input")
   player.add("minimap")
   player.add("hud")
