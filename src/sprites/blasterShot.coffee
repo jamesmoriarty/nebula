@@ -7,21 +7,6 @@ Q.Shot.extend 'BlasterShot',
       , p
 
     @on "sensor", (otherEntity) ->
-      n = Q.random 1, 3
-      for [1..n]
-        @stage.insert new Q.Particle
-          x:  otherEntity.p.x
-          y:  otherEntity.p.y
-          vx: Q.random -50, 50
-          vy: Q.random -50, 50
-
-        @stage.insert new Q.ShieldFlare
-          x:  otherEntity.p.x
-          y:  otherEntity.p.y
-          vx: otherEntity.vx
-          vy: otherEntity.vy
-          angle: @p.angle - 180
-
       Q.audio.play 'hit.mp3'
       @destroy()
 

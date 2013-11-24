@@ -8,6 +8,7 @@ Q.component 'damageable',
     if damage = otherEntity.p.damage
       @entity.p.hp = @entity.p.hp - damage
       otherEntity.p.damage = 0
+      @entity.trigger 'damaged', otherEntity
     if @entity.p.hp <= 0
       @entity.destroy()
 
