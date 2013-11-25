@@ -14,7 +14,6 @@ Q.Shot.extend 'BlasterShot',
           y:  otherEntity.p.y
           vx: Q.random -50, 50
           vy: Q.random -50, 50
-
       Q.audio.play 'hit.mp3'
       @destroy()
 
