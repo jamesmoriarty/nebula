@@ -121,7 +121,7 @@
 
   Q.input.keys[68] = 'right';
 
-  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'particle.png', 'blasterShot.png', 'blasterShot.mp3', 'rocketShot.png', 'rocketShot.mp3', 'background.png', 'star.png', 'hit.mp3', 'exp.mp3'], function() {
+  Q.load(['ship1.png', 'ship2.png', 'ship3.png', 'particle.png', 'blasterShot.png', 'blasterShot.mp3', 'rocketShot.png', 'rocketShot.mp3', 'background.png', 'star.png', 'shieldFlare.png', 'hit.mp3', 'exp.mp3'], function() {
     return Q.stageScene('Menu');
   }, {
     progressCallback: function(loaded, total) {
@@ -367,6 +367,7 @@
       if (damage = otherEntity.p.damage) {
         this.entity.p.hp = this.entity.p.hp - damage;
         otherEntity.p.damage = 0;
+        this.entity.trigger('damaged', otherEntity);
       }
       if (this.entity.p.hp <= 0) {
         return this.entity.destroy();
@@ -672,9 +673,18 @@
 
   Q.Ship.extend('SmallShip', {
     init: function(p) {
-      return this._super(Q._extend({
+      this._super(Q._extend({
         asset: "ship" + (Math.floor((Math.random() * 3) + 1)) + ".png"
       }, p));
+      return this.on('damaged', function(otherEntity) {
+        return this.stage.insert(new Q.ShieldFlare({
+          x: this.p.x,
+          y: this.p.y,
+          vx: this.p.vx,
+          vy: this.p.vy,
+          angle: otherEntity.p.angle - 180
+        }));
+      });
     }
   }, {
     acceleration: 100,
