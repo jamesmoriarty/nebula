@@ -482,6 +482,32 @@
     }
   });
 
+  Q.Sprite.extend('ShieldFlare', {
+    init: function(p) {
+      this._super(Q._extend({
+        asset: 'shieldFlare.png',
+        type: Q.SPRITE_NONE,
+        opacity: .5,
+        opacityRate: -.03,
+        z: 5,
+        ttl: 200
+      }, p));
+      this.add('2d');
+      return this.add('ttl');
+    },
+    step: function(dt) {
+      if (this.p.opacity >= 0) {
+        return this.p.opacity += this.p.opacityRate;
+      } else {
+        return this.destroy();
+      }
+    },
+    draw: function(ctx) {
+      ctx.globalCompositeOperation = 'lighter';
+      return this._super(ctx);
+    }
+  });
+
   Q.Sprite.extend('Ship', {
     init: function(p) {
       this._super(Q._extend({
