@@ -55,8 +55,8 @@ setInterval ->
         Q.inputs['mouseY'] = Q.canvasToStageY last.y, Q.stage()
   , 50
 
-#document.addEventListener "click", ->
-#  e = document.getElementById("quintus")
-#  if e.webkitRequestFullScreen
-#    e.webkitRequestFullScreen()
+# document.addEventListener "click", ->
+#   e = document.getElementById("quintus")
+#   if e.webkitRequestFullScreen
+#     e.webkitRequestFullScreen()
 
