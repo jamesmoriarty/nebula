@@ -22,13 +22,13 @@ Q.Sprite.extend 'Particle',
     @p.vx *= (1 - dt)
     @p.vy *= (1 - dt)
 
-    if @p.opacity >= 0
-      @p.opacity += @p.opacityRate
+    if @p.opacity != 0
+      @p.opacity = Math.max(@p.opacity + @p.opacityRate, 0)
     else
       @destroy()
 
-    if @p.scale >= 0
-      @p.scale += @p.scaleRate
+    if @p.scale != 0
+      @p.scale = Math.max(@p.scale + @p.scaleRate, 0)
     else
       @destroy()
 
