@@ -490,13 +490,13 @@
       }
       this.p.vx *= 1 - dt;
       this.p.vy *= 1 - dt;
-      if (this.p.opacity >= 0) {
-        this.p.opacity += this.p.opacityRate;
+      if (this.p.opacity !== 0) {
+        this.p.opacity = Math.max(this.p.opacity + this.p.opacityRate, 0);
       } else {
         this.destroy();
       }
-      if (this.p.scale >= 0) {
-        return this.p.scale += this.p.scaleRate;
+      if (this.p.scale !== 0) {
+        return this.p.scale = Math.max(this.p.scale + this.p.scaleRate, 0);
       } else {
         return this.destroy();
       }
