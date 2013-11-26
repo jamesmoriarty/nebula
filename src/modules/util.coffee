@@ -1,5 +1,23 @@
 Quintus.Util = (Q) ->
 
+  Q.fadeIn = (callback, rate = 10) ->
+    if Q.fadeOpacity != 0
+      Q.fadeOpacity = Math.max(Q.fadeOpacity - 0.01, 0)
+      setTimeout ->
+          Q.fadeIn(callback, rate)
+        , rate
+    else
+      callback.call() if callback
+
+  Q.fadeOut = (callback, rate = 10) ->
+    if Q.fadeOpacity != 1
+      Q.fadeOpacity = Math.min(Q.fadeOpacity + 0.01, 1)
+      setTimeout ->
+          Q.fadeOut(callback, rate)
+        , rate
+    else
+      callback.call() if callback
+
   Q.random = (min, max) ->
     Math.random() * ( max - min ) + min
 

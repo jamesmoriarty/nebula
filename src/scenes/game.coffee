@@ -40,14 +40,27 @@ Q.scene 'Game', (stage) ->
           won = false
       if won
         setTimeout ->
-          Q.stageScene 'Menu'
-        , 3000
+            Q.fadeOut ->
+              Q.stageScene 'Menu'
+              Q.fadeIn()
+          , 3000
 
   player.on 'destroyed', ->
     setTimeout ->
-      Q.stageScene 'Menu'
-    , 3000
+        Q.fadeOut ->
+          Q.stageScene 'Menu'
+          Q.fadeIn()
+      , 3000
 
   stage.add 'viewport'
   stage.follow(player, x: true, y: true)
+
+  stage.on "postrender", (ctx) ->
+    Q.fadeOpacity = Q.fadeOpacity or 0
+    ctx.save()
+    ctx.setTransform 1, 0, 0, 1, 0, 0
+    ctx.translate 0, 0
+    ctx.fillStyle="rgba(0,0,0,#{Q.fadeOpacity})"
+    ctx.fillRect(0, 0, Q.width, Q.height)
+    ctx.restore()
 

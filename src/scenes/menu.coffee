@@ -20,7 +20,10 @@ Q.scene 'Menu', (stage) ->
     y: Q.height / 4 * 2
     fontColor: color
     font: '400 24px ui'
-    , -> Q.stageScene 'Game'
+    , ->
+      Q.fadeOut ->
+        Q.stageScene 'Game'
+        Q.fadeIn()
 
   button = new Q.UI.Button
     label: "Mouse Toggle"
@@ -36,3 +39,11 @@ Q.scene 'Menu', (stage) ->
 
   stage.insert button
 
+  stage.on "postrender", (ctx) ->
+    Q.fadeOpacity = Q.fadeOpacity or 0
+    ctx.save()
+    ctx.setTransform 1, 0, 0, 1, 0, 0
+    ctx.translate 0, 0
+    ctx.fillStyle="rgba(0,0,0,#{Q.fadeOpacity})"
+    ctx.fillRect(0, 0, Q.width, Q.height)
+    ctx.restore()
