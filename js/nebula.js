@@ -48,6 +48,36 @@
   };
 
   Quintus.Util = function(Q) {
+    Q.fadeIn = function(callback, rate) {
+      if (rate == null) {
+        rate = 10;
+      }
+      if (Q.fadeOpacity !== 0) {
+        Q.fadeOpacity = Math.max(Q.fadeOpacity - 0.01, 0);
+        return setTimeout(function() {
+          return Q.fadeIn(callback, rate);
+        }, rate);
+      } else {
+        if (callback) {
+          return callback.call();
+        }
+      }
+    };
+    Q.fadeOut = function(callback, rate) {
+      if (rate == null) {
+        rate = 10;
+      }
+      if (Q.fadeOpacity !== 1) {
+        Q.fadeOpacity = Math.min(Q.fadeOpacity + 0.01, 1);
+        return setTimeout(function() {
+          return Q.fadeOut(callback, rate);
+        }, rate);
+      } else {
+        if (callback) {
+          return callback.call();
+        }
+      }
+    };
     Q.random = function(min, max) {
       return Math.random() * (max - min) + min;
     };
@@ -783,20 +813,35 @@
         });
         if (won) {
           return setTimeout(function() {
-            return Q.stageScene('Menu');
+            return Q.fadeOut(function() {
+              Q.stageScene('Menu');
+              return Q.fadeIn();
+            });
           }, 3000);
         }
       });
     }
     player.on('destroyed', function() {
       return setTimeout(function() {
-        return Q.stageScene('Menu');
+        return Q.fadeOut(function() {
+          Q.stageScene('Menu');
+          return Q.fadeIn();
+        });
       }, 3000);
     });
     stage.add('viewport');
-    return stage.follow(player, {
+    stage.follow(player, {
       x: true,
       y: true
+    });
+    return stage.on("postrender", function(ctx) {
+      Q.fadeOpacity = Q.fadeOpacity || 0;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.translate(0, 0);
+      ctx.fillStyle = "rgba(0,0,0," + Q.fadeOpacity + ")";
+      ctx.fillRect(0, 0, Q.width, Q.height);
+      return ctx.restore();
     });
   });
 
@@ -825,7 +870,10 @@
       fontColor: color,
       font: '400 24px ui'
     }, function() {
-      return Q.stageScene('Game');
+      return Q.fadeOut(function() {
+        Q.stageScene('Game');
+        return Q.fadeIn();
+      });
     }));
     button = new Q.UI.Button({
       label: "Mouse Toggle",
@@ -841,7 +889,16 @@
         return "" + (Q.mouseEnabled ? "Disable" : "Enable") + " Mouse";
       }
     });
-    return stage.insert(button);
+    stage.insert(button);
+    return stage.on("postrender", function(ctx) {
+      Q.fadeOpacity = Q.fadeOpacity || 0;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.translate(0, 0);
+      ctx.fillStyle = "rgba(0,0,0," + Q.fadeOpacity + ")";
+      ctx.fillRect(0, 0, Q.width, Q.height);
+      return ctx.restore();
+    });
   });
 
 }).call(this);
