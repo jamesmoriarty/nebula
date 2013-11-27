@@ -3,7 +3,8 @@ Quintus.Util = (Q) ->
   Q.fadeIn = (callback, rate = 10) ->
     if Q.fadeOpacity != 0
       Q.fadeOpacity = Math.max(Q.fadeOpacity - 0.01, 0)
-      setTimeout ->
+      clearTimeout(Q.fadeTimeoutId)
+      Q.fadeTimeoutId = setTimeout ->
           Q.fadeIn(callback, rate)
         , rate
     else
@@ -12,7 +13,8 @@ Quintus.Util = (Q) ->
   Q.fadeOut = (callback, rate = 10) ->
     if Q.fadeOpacity != 1
       Q.fadeOpacity = Math.min(Q.fadeOpacity + 0.01, 1)
-      setTimeout ->
+      clearTimeout(Q.fadeTimeoutId)
+      Q.fadeTimeoutId = setTimeout ->
           Q.fadeOut(callback, rate)
         , rate
     else
