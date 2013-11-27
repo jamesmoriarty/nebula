@@ -1,6 +1,6 @@
 {
     "name": "nebula-js",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "devDependencies": {
         "coffee-script": "~ 1.6.3",
         "http-server": "~ 0.5.5"
