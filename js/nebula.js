@@ -54,7 +54,8 @@
       }
       if (Q.fadeOpacity !== 0) {
         Q.fadeOpacity = Math.max(Q.fadeOpacity - 0.01, 0);
-        return setTimeout(function() {
+        clearTimeout(Q.fadeTimeoutId);
+        return Q.fadeTimeoutId = setTimeout(function() {
           return Q.fadeIn(callback, rate);
         }, rate);
       } else {
@@ -69,7 +70,8 @@
       }
       if (Q.fadeOpacity !== 1) {
         Q.fadeOpacity = Math.min(Q.fadeOpacity + 0.01, 1);
-        return setTimeout(function() {
+        clearTimeout(Q.fadeTimeoutId);
+        return Q.fadeTimeoutId = setTimeout(function() {
           return Q.fadeOut(callback, rate);
         }, rate);
       } else {
