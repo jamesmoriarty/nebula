@@ -1,9 +1,10 @@
-Q.UI.Text.extend "Score",
+Q.UI.Text.extend "Level",
+
   init: ->
     @_super
-      label: "SCORE: 0"
+      label: "Level 1"
 
-    Q.state.on "change.score", @, "score"
+    Q.state.on "change.level", @, "level"
 
   draw: (ctx) ->
     ctx.save()
@@ -16,5 +17,5 @@ Q.UI.Text.extend "Score",
     ctx.fillText @p.label, (Q.width / 2) - (metrics.width / 2), 50
     ctx.restore()
 
-  score: (score) ->
-    @p.label = "SCORE: " + score
+  level: (level) ->
+    @p.label = "Level " + level

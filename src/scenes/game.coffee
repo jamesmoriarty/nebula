@@ -1,5 +1,5 @@
 Q.scene 'Game', (stage) ->
-  Q.state.reset score: 0, level: 1
+  Q.state.reset level: 1
 
   player = new Q.SmallShip
     asset: "ship1.png"
@@ -38,9 +38,6 @@ Q.scene 'Game', (stage) ->
       stage.insert ship
 
       ship.on 'destroyed', ->
-        if ship.p.asset != player.p.asset
-          Q.state.inc "score", 1000
-
         won = true
         Q._each Q("SmallShip").items, (ship) ->
           if ship.p.hp > 0 and ship.p.asset != player.p.asset
@@ -60,7 +57,7 @@ Q.scene 'Game', (stage) ->
           Q.fadeIn()
       , 3000
 
-  stage.insert new Q.Score()
+  stage.insert new Q.Level()
 
   stage.add 'viewport'
   stage.follow(player, x: true, y: true)
