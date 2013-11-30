@@ -26,4 +26,9 @@ Assets
 
 [Remastered Tyrian Graphics](http://www.lostgarden.com/2007/04/free-game-graphics-tyrian-ships-and.html)
 
+Fonts
+-----
+
+[Ubuntu Titling](http://www.fontsquirrel.com/fonts/Ubuntu-Titling)
+
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jamesmoriarty/nebula-js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
