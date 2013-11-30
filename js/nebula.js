@@ -710,6 +710,30 @@
     }
   });
 
+  Q.UI.Text.extend("Level", {
+    init: function() {
+      this._super({
+        label: "Level 1"
+      });
+      return Q.state.on("change.level", this, "level");
+    },
+    draw: function(ctx) {
+      var metrics;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.translate(0, 0);
+      ctx.beginPath();
+      ctx.font = "400 24px ui";
+      metrics = ctx.measureText(this.p.label);
+      ctx.fillStyle = "#FFF";
+      ctx.fillText(this.p.label, (Q.width / 2) - (metrics.width / 2), 50);
+      return ctx.restore();
+    },
+    level: function(level) {
+      return this.p.label = "Level " + level;
+    }
+  });
+
   Q.Sprite.extend('MenuStar', {
     init: function(p) {
       return this._super(p, {
