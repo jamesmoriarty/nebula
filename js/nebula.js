@@ -348,7 +348,7 @@
           return maxY = diffY;
         }
       });
-      scale = Math.min(width / maxX, height / maxY) / 2.1;
+      scale = Math.min(0.1, Math.min(width / maxX, height / maxY) / 2.1);
       centerX = width / 2;
       centerY = height / 2;
       ctx.save();
@@ -602,7 +602,7 @@
           vy: this.p.vy - Q.offsetY(angle, Math.random() * 50),
           scale: 1,
           sclaeRate: .02,
-          opacityRate: -.001,
+          opacityRate: -.01,
           radius: 16
         }));
       }
@@ -773,8 +773,12 @@
   });
 
   Q.scene('Game', function(stage) {
-    var enemy, n, player, radius, theta, x, y, _i, _j, _ref;
+    var insert, player, setupLevel, _i, _ref;
+    Q.state.reset({
+      level: 1
+    });
     player = new Q.SmallShip({
+      asset: "ship1.png",
       angle: Math.random() * 360,
       x: Q.center().x,
       y: Q.center().y
@@ -792,20 +796,21 @@
       }));
     }
     stage.insert(player);
-    for (n = _j = 1; _j <= 6; n = ++_j) {
-      radius = 1000;
-      theta = Math.PI * 2 / 6 * n;
-      x = player.p.x + radius * Math.cos(theta);
-      y = player.p.y + radius * Math.sin(theta);
-      enemy = new Q.SmallShip({
-        angle: Math.random() * 360,
-        x: x,
-        y: y
-      });
-      enemy.add("aiHunter");
-      enemy.add("blaster");
-      stage.insert(enemy);
-      enemy.on('destroyed', function() {
+    player.on('destroyed', function() {
+      return setTimeout(function() {
+        return Q.fadeOut(function() {
+          Q.stageScene('Menu');
+          return Q.fadeIn();
+        });
+      }, 3000);
+    });
+    insert = function(p) {
+      var ship;
+      ship = new Q.SmallShip(p);
+      ship.add("aiHunter");
+      ship.add("blaster");
+      stage.insert(ship);
+      return ship.on('destroyed', function() {
         var won;
         won = true;
         Q._each(Q("SmallShip").items, function(ship) {
@@ -816,27 +821,45 @@
         if (won) {
           return setTimeout(function() {
             return Q.fadeOut(function() {
-              Q.stageScene('Menu');
+              Q.state.inc("level", 1);
+              setupLevel();
               return Q.fadeIn();
             });
           }, 3000);
         }
       });
-    }
-    player.on('destroyed', function() {
-      return setTimeout(function() {
-        return Q.fadeOut(function() {
-          Q.stageScene('Menu');
-          return Q.fadeIn();
+    };
+    setupLevel = function() {
+      var n, radius, theta, x, y, _j, _ref1, _results;
+      if (Q.state.p.level === 1 || Q.state.p.level % 5 === 0) {
+        insert({
+          asset: player.p.asset,
+          x: player.p.x + Q.random(-100, 100),
+          y: player.p.y + Q.random(-100, 100)
         });
-      }, 3000);
-    });
+      }
+      _results = [];
+      for (n = _j = 1, _ref1 = Q.state.p.level; 1 <= _ref1 ? _j <= _ref1 : _j >= _ref1; n = 1 <= _ref1 ? ++_j : --_j) {
+        radius = 1000;
+        theta = Math.PI * 2 / 6 * n;
+        x = player.p.x + radius * Math.cos(theta);
+        y = player.p.y + radius * Math.sin(theta);
+        _results.push(insert({
+          asset: "ship" + (Q.random(2, 3)) + ".png",
+          angle: Math.random() * 360,
+          x: x,
+          y: y
+        }));
+      }
+      return _results;
+    };
+    stage.insert(new Q.Level());
     stage.add('viewport');
     stage.follow(player, {
       x: true,
       y: true
     });
-    return stage.on("postrender", function(ctx) {
+    stage.on("postrender", function(ctx) {
       Q.fadeOpacity = Q.fadeOpacity || 0;
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -845,6 +868,7 @@
       ctx.fillRect(0, 0, Q.width, Q.height);
       return ctx.restore();
     });
+    return setupLevel();
   });
 
   Q.scene('Menu', function(stage) {
@@ -877,21 +901,23 @@
         return Q.fadeIn();
       });
     }));
-    button = new Q.UI.Button({
-      label: "Mouse Toggle",
-      x: x,
-      y: Q.height / 4 * 3,
-      fontColor: color,
-      font: '400 24px ui'
-    }, function() {
-      return Q.mouseEnabled = !Q.mouseEnabled;
-    });
-    Object.defineProperty(button.p, 'label', {
-      get: function() {
-        return "" + (Q.mouseEnabled ? "Disable" : "Enable") + " Mouse";
-      }
-    });
-    stage.insert(button);
+    if (!Q.touchDevice) {
+      button = new Q.UI.Button({
+        label: "Mouse Toggle",
+        x: x,
+        y: Q.height / 4 * 3,
+        fontColor: color,
+        font: '400 24px ui'
+      }, function() {
+        return Q.mouseEnabled = !Q.mouseEnabled;
+      });
+      Object.defineProperty(button.p, 'label', {
+        get: function() {
+          return "" + (Q.mouseEnabled ? "Disable" : "Enable") + " Mouse";
+        }
+      });
+      stage.insert(button);
+    }
     return stage.on("postrender", function(ctx) {
       Q.fadeOpacity = Q.fadeOpacity || 0;
       ctx.save();
