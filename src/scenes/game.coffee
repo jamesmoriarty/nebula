@@ -1,6 +1,8 @@
 Q.scene 'Game', (stage) ->
+  Q.state.reset score: 0, level: 1
 
   player = new Q.SmallShip
+    asset: "ship1.png"
     angle: Math.random() * 360
     x:     Q.center().x
     y:     Q.center().y
@@ -17,31 +19,37 @@ Q.scene 'Game', (stage) ->
 
   stage.insert player
 
-  for n in [1..6]
-    radius = 1000
-    theta  = Math.PI * 2 / 6 * n
-    x      = player.p.x + radius * Math.cos theta
-    y      = player.p.y + radius * Math.sin theta
+  setupLevel = ->
+    for n in [1..Q.state.p.level]
+      radius = 1000
+      theta  = Math.PI * 2 / 6 * n
+      x      = player.p.x + radius * Math.cos theta
+      y      = player.p.y + radius * Math.sin theta
 
-    enemy  = new Q.SmallShip
-      angle: Math.random() * 360
-      x:     x
-      y:     y
+      ship  = new Q.SmallShip
+        asset: "ship#{Q.random 2, 3}.png"
+        angle: Math.random() * 360
+        x:     x
+        y:     y
 
-    enemy.add("aiHunter")
-    enemy.add("blaster")
+      ship.add("aiHunter")
+      ship.add("blaster")
 
-    stage.insert enemy
+      stage.insert ship
 
-    enemy.on 'destroyed', ->
-      won = true
-      Q._each Q("SmallShip").items, (ship) ->
-        if ship.p.hp > 0 and ship.p.asset != player.p.asset
-          won = false
-      if won
-        setTimeout ->
+      ship.on 'destroyed', ->
+        if ship.p.asset != player.p.asset
+          Q.state.inc "score", 1000
+
+        won = true
+        Q._each Q("SmallShip").items, (ship) ->
+          if ship.p.hp > 0 and ship.p.asset != player.p.asset
+            won = false
+        if won
+          setTimeout ->
             Q.fadeOut ->
-              Q.stageScene 'Menu'
+              Q.state.inc "level", 1
+              setupLevel()
               Q.fadeIn()
           , 3000
 
@@ -51,6 +59,8 @@ Q.scene 'Game', (stage) ->
           Q.stageScene 'Menu'
           Q.fadeIn()
       , 3000
+
+  stage.insert new Q.Score()
 
   stage.add 'viewport'
   stage.follow(player, x: true, y: true)
@@ -64,3 +74,4 @@ Q.scene 'Game', (stage) ->
     ctx.fillRect(0, 0, Q.width, Q.height)
     ctx.restore()
 
+  setupLevel()
