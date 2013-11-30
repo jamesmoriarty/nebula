@@ -14,7 +14,7 @@ Q.component 'minimap',
       diffY = Math.abs(_this.p.y - this.p.y)
       maxY  = diffY if diffY > maxY
 
-    scale = Math.min(width / maxX, height / maxY) / 2.1
+    scale = Math.min 0.1, Math.min(width / maxX, height / maxY) / 2.1
 
     centerX = width  / 2
     centerY = height / 2

@@ -1,6 +1,8 @@
 Q.scene 'Game', (stage) ->
+  Q.state.reset level: 1
 
   player = new Q.SmallShip
+    asset: "ship1.png"
     angle: Math.random() * 360
     x:     Q.center().x
     y:     Q.center().y
@@ -17,40 +19,52 @@ Q.scene 'Game', (stage) ->
 
   stage.insert player
 
-  for n in [1..6]
-    radius = 1000
-    theta  = Math.PI * 2 / 6 * n
-    x      = player.p.x + radius * Math.cos theta
-    y      = player.p.y + radius * Math.sin theta
-
-    enemy  = new Q.SmallShip
-      angle: Math.random() * 360
-      x:     x
-      y:     y
-
-    enemy.add("aiHunter")
-    enemy.add("blaster")
-
-    stage.insert enemy
-
-    enemy.on 'destroyed', ->
-      won = true
-      Q._each Q("SmallShip").items, (ship) ->
-        if ship.p.hp > 0 and ship.p.asset != player.p.asset
-          won = false
-      if won
-        setTimeout ->
-            Q.fadeOut ->
-              Q.stageScene 'Menu'
-              Q.fadeIn()
-          , 3000
-
   player.on 'destroyed', ->
     setTimeout ->
         Q.fadeOut ->
           Q.stageScene 'Menu'
           Q.fadeIn()
       , 3000
+
+  insert = (p) ->
+      ship  = new Q.SmallShip(p)
+      ship.add("aiHunter")
+      ship.add("blaster")
+      stage.insert ship
+
+      ship.on 'destroyed', ->
+        won = true
+        Q._each Q("SmallShip").items, (ship) ->
+          if ship.p.hp > 0 and ship.p.asset != player.p.asset
+            won = false
+        if won
+          setTimeout ->
+            Q.fadeOut ->
+              Q.state.inc "level", 1
+              setupLevel()
+              Q.fadeIn()
+          , 3000
+
+  setupLevel = ->
+    if Q.state.p.level == 1 or Q.state.p.level % 5 == 0
+      insert
+        asset: player.p.asset
+        x: player.p.x + Q.random -100, 100
+        y: player.p.y + Q.random -100, 100
+
+    for n in [1..Q.state.p.level]
+      radius = 1000
+      theta  = Math.PI * 2 / 6 * n
+      x      = player.p.x + radius * Math.cos theta
+      y      = player.p.y + radius * Math.sin theta
+
+      insert
+        asset: "ship#{Q.random 2, 3}.png"
+        angle: Math.random() * 360
+        x:     x
+        y:     y
+
+  stage.insert new Q.Level()
 
   stage.add 'viewport'
   stage.follow(player, x: true, y: true)
@@ -64,3 +78,4 @@ Q.scene 'Game', (stage) ->
     ctx.fillRect(0, 0, Q.width, Q.height)
     ctx.restore()
 
+  setupLevel()

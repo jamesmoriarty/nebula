@@ -1,15 +1,7 @@
 nebula-js
 =========
 
-Play it [here](http://jamesmoriarty.github.io/nebula-js/index.html).
-
-Run
----
-
-```
-npm install
-make run
-```
+HTML5 canvas space shooter. Play it [here](http://jamesmoriarty.github.io/nebula-js/index.html).
 
 Screenshots
 -----------
@@ -25,5 +17,18 @@ Assets
 ------
 
 [Remastered Tyrian Graphics](http://www.lostgarden.com/2007/04/free-game-graphics-tyrian-ships-and.html)
+
+Fonts
+-----
+
+[Ubuntu Titling](http://www.fontsquirrel.com/fonts/Ubuntu-Titling)
+
+Development
+-----------
+
+```
+npm install
+make run
+```
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jamesmoriarty/nebula-js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

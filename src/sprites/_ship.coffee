@@ -60,7 +60,7 @@ Q.Sprite.extend 'Ship',
         vy: @p.vy - Q.offsetY(angle, Math.random() * 50)
         scale: 1
         sclaeRate: .02
-        opacityRate: -.001
+        opacityRate: -.01
         radius: 16
 
     for n in [1..10]
