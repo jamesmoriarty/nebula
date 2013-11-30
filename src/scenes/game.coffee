@@ -19,22 +19,17 @@ Q.scene 'Game', (stage) ->
 
   stage.insert player
 
-  setupLevel = ->
-    for n in [1..Q.state.p.level]
-      radius = 1000
-      theta  = Math.PI * 2 / 6 * n
-      x      = player.p.x + radius * Math.cos theta
-      y      = player.p.y + radius * Math.sin theta
+  player.on 'destroyed', ->
+    setTimeout ->
+        Q.fadeOut ->
+          Q.stageScene 'Menu'
+          Q.fadeIn()
+      , 3000
 
-      ship  = new Q.SmallShip
-        asset: "ship#{Q.random 2, 3}.png"
-        angle: Math.random() * 360
-        x:     x
-        y:     y
-
+  insert = (p) ->
+      ship  = new Q.SmallShip(p)
       ship.add("aiHunter")
       ship.add("blaster")
-
       stage.insert ship
 
       ship.on 'destroyed', ->
@@ -50,12 +45,24 @@ Q.scene 'Game', (stage) ->
               Q.fadeIn()
           , 3000
 
-  player.on 'destroyed', ->
-    setTimeout ->
-        Q.fadeOut ->
-          Q.stageScene 'Menu'
-          Q.fadeIn()
-      , 3000
+  setupLevel = ->
+    if Q.state.p.level == 1 or Q.state.p.level % 5 == 0
+      insert
+        asset: player.p.asset
+        x: player.p.x + Q.random -100, 100
+        y: player.p.y + Q.random -100, 100
+
+    for n in [1..Q.state.p.level]
+      radius = 1000
+      theta  = Math.PI * 2 / 6 * n
+      x      = player.p.x + radius * Math.cos theta
+      y      = player.p.y + radius * Math.sin theta
+
+      insert
+        asset: "ship#{Q.random 2, 3}.png"
+        angle: Math.random() * 360
+        x:     x
+        y:     y
 
   stage.insert new Q.Level()
 
