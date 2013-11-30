@@ -25,19 +25,20 @@ Q.scene 'Menu', (stage) ->
         Q.stageScene 'Game'
         Q.fadeIn()
 
-  button = new Q.UI.Button
-    label: "Mouse Toggle"
-    x: x
-    y: Q.height / 4 * 3
-    fontColor: color
-    font: '400 24px ui'
-    , -> Q.mouseEnabled = !Q.mouseEnabled
+  if !Q.touchDevice
+    button = new Q.UI.Button
+      label: "Mouse Toggle"
+      x: x
+      y: Q.height / 4 * 3
+      fontColor: color
+      font: '400 24px ui'
+      , -> Q.mouseEnabled = !Q.mouseEnabled
 
-  Object.defineProperty button.p, 'label',
-    get: ->
-      "#{if Q.mouseEnabled then "Disable" else "Enable"} Mouse"
+    Object.defineProperty button.p, 'label',
+      get: ->
+        "#{if Q.mouseEnabled then "Disable" else "Enable"} Mouse"
 
-  stage.insert button
+    stage.insert button
 
   stage.on "postrender", (ctx) ->
     Q.fadeOpacity = Q.fadeOpacity or 0
