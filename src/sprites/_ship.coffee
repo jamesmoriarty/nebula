@@ -12,6 +12,7 @@ Q.Sprite.extend 'Ship',
 
     @add '2d'
     @add 'damageable'
+    @add 'scrapable'
 
     @on 'up', @, 'up'
     @on 'left', @, 'left'
@@ -59,7 +60,7 @@ Q.Sprite.extend 'Ship',
         vx: @p.vx - Q.offsetX(angle, Math.random() * 50)
         vy: @p.vy - Q.offsetY(angle, Math.random() * 50)
         scale: 1
-        sclaeRate: .02
+        scaleRate: .02
         opacityRate: -.001
         radius: 16
 
@@ -72,8 +73,7 @@ Q.Sprite.extend 'Ship',
         vx: @p.vx - Q.offsetX(angle, 10)
         vy: @p.vy - Q.offsetY(angle, 10)
         scale: Math.max(Math.random(), 0.3)
-        scale: 1
-        sclaeRate: .02
+        scaleRate: .02
         radius: 16
 
     for n in [1..10]

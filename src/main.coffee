@@ -28,8 +28,10 @@ Q.load [
     'background.png',
     'star.png',
     'shieldFlare.png',
+    'rock-1.png',
+    'rock-2.png',
     'hit.mp3',
-    'exp.mp3',
+    'exp.mp3'
   ], ->
     Q.stageScene('Menu')
   , progressCallback: (loaded, total) ->

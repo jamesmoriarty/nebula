@@ -10,6 +10,7 @@ Q.scene 'Game', (stage) ->
   player.add("input")
   player.add("minimap")
   player.add("hud")
+  player.add("gatherer")
 
   stage.insert new Q.Background target: player
 
