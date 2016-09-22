@@ -1,7 +1,7 @@
 nebula-js
 =========
 
-HTML5 canvas space shooter. Play it [here](http://jamesmoriarty.github.io/nebula-js/index.html).
+HTML5 canvas space shooter. Play it [here](http://jamesmoriarty.github.io/nebula/).
 
 Screenshots
 -----------
@@ -30,5 +30,3 @@ Development
 npm install
 make run
 ```
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jamesmoriarty/nebula-js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
