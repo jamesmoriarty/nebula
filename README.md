@@ -9,9 +9,6 @@ HTML5 canvas space shooter. Play it [here](http://jamesmoriarty.github.io/nebula
 - Assets - [Remastered Tyrian Graphics](http://www.lostgarden.com/2007/04/free-game-graphics-tyrian-ships-and.html)
 - Fonts - [Ubuntu Titling](http://www.fontsquirrel.com/fonts/Ubuntu-Titling)
 
-
-![screenshot of menu](https://raw.github.com/jamesmoriarty/nebula-js/master/doc/screenshot-01.png)
-
 # Compile
 
 ```
@@ -23,3 +20,7 @@ make
 ```
 make run
 ```
+
+# Screenshot
+
+![screenshot of menu](https://raw.github.com/jamesmoriarty/nebula-js/master/doc/screenshot-01.png)
