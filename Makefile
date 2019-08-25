@@ -2,7 +2,7 @@ compile:
 	# find . -name '*.coffee'
 	# for file in audio/*.mp3; do `ffmpeg -i $file audio/$(basename ${file} .mp3).ogg`;done
 	yarn install
-
+	mkdir -p js
 	cat \
 		src/modules/util.coffee \
 		src/modules/math.coffee \
