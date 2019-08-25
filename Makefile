@@ -15,14 +15,13 @@ compile:
 		src/components/hud.coffee \
 		src/components/ais/hunter.coffee \
 		src/components/ais/wander.coffee \
-		src/components/weapons/_weapon.coffee \
+		src/components/weapons/weapon.coffee \
 		src/components/weapons/blaster.coffee \
 		src/components/minimap.coffee \
-		src/sprites/_ship.coffee \
-		src/sprites/_shot.coffee \
-		src/sprites/_shieldFlare.coffee \
-		src/sprites/_particle.coffee \
-		src/sprites/_particle.coffee \
+		src/sprites/ship.coffee \
+		src/sprites/shot.coffee \
+		src/sprites/shieldFlare.coffee \
+		src/sprites/particle.coffee \
 		src/sprites/star.coffee \
 		src/sprites/menuStar.coffee \
 		src/sprites/blasterShot.coffee \
@@ -32,7 +31,7 @@ compile:
 server:
 	# ruby -run -e httpd . -p3001 &
 	# python -m SimpleHTTPServer 3001
-	yarn run http-server . -p 3001 
+	yarn run http-server . -p 3001 &
 open:
 	open http://localhost:3001/index.html
 run: compile server open
