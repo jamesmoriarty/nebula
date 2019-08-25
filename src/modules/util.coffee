@@ -27,29 +27,14 @@ Quintus.Util = (Q) ->
     { x: Q.width / 2, y: Q.height / 2 }
 
   Q.insideViewport = (entity) ->
-    stage = Q.stage()
-    points = [
-      { x: Q.canvasToStageX(0,       stage), y: Q.canvasToStageY(0,        stage) },
-      { x: Q.canvasToStageX(Q.width, stage), y: Q.canvasToStageY(0,        stage) },
-      { x: Q.canvasToStageX(Q.width, stage), y: Q.canvasToStageY(Q.height, stage) },
-      { x: Q.canvasToStageX(0,       stage), y: Q.canvasToStageY(Q.height, stage) }
-    ]
-
-    Q.insidePolygon points, entity.p
+    Q.insidePolygon [
+        { x: Q.canvasToStageX(0,       Q.stage()), y: Q.canvasToStageY(0,        Q.stage()) },
+        { x: Q.canvasToStageX(Q.width, Q.stage()), y: Q.canvasToStageY(0,        Q.stage()) },
+        { x: Q.canvasToStageX(Q.width, Q.stage()), y: Q.canvasToStageY(Q.height, Q.stage()) },
+        { x: Q.canvasToStageX(0,       Q.stage()), y: Q.canvasToStageY(Q.height, Q.stage()) }
+      ], entity.p
 
   Q.insidePolygon = (points, p) ->
-    xs   = Q._map points, -> @x
-    minX = Math.min.apply @, xs
-    maxX = Math.max.apply @, xs
-
-    ys   = Q._map points, -> @y
-    minY = Math.min.apply @, ys
-    maxY = Math.max.apply @, ys
-
-    if p.x < minX || p.x > maxX || p.y < minY || p.y > maxY
-      # definitely not within the polygon!
-      return false
-
     c = false
     i = -1
     l = points.length
