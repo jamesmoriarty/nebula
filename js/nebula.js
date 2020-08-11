@@ -792,50 +792,6 @@
     }
   });
 
-  Q.Sprite.extend('Particle', {
-    init: function(p) {
-      this._super(Q._extend({
-        asset: 'particle.png',
-        type: Q.SPRITE_NONE,
-        collisionMask: Q.SPRITE_NONE,
-        z: 5,
-        opacity: .5,
-        opacityRate: -.03,
-        scale: .5,
-        scaleRate: -.03,
-        color: "white",
-        radius: 8
-      }, p));
-      return this.add('2d');
-    },
-    step: function(dt) {
-      if (!Q.insideViewport(this)) {
-        this.destroy();
-      }
-      this.p.vx *= 1 - dt;
-      this.p.vy *= 1 - dt;
-      if (this.p.opacity !== 0) {
-        this.p.opacity = Math.max(this.p.opacity + this.p.opacityRate, 0);
-      } else {
-        this.destroy();
-      }
-      if (this.p.scale !== 0) {
-        return this.p.scale = Math.max(this.p.scale + this.p.scaleRate, 0);
-      } else {
-        return this.destroy();
-      }
-    },
-    draw: function(ctx) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = this.p.color;
-      ctx.beginPath();
-      ctx.arc(0, 0, this.p.radius, 0, 2 * Math.PI);
-      ctx.fill();
-      return ctx.restore();
-    }
-  });
-
   Q.Sprite.extend('Star', {
     init: function(p) {
       this._super(p, {
