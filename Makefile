@@ -28,6 +28,7 @@ compile:
 		src/sprites/level.coffee \
 		src/sprites/background.coffee \
 		src/sprites/smallShip.coffee | yarn --silent run coffee --no-header --compile --stdio > js/nebula.js
+		curl -sH 'Accept-encoding: gzip' http://cdn.html5quintus.com/v0.1.6/quintus-all.js | gunzip - > js/quintus-all.js
 server:
 	# ruby -run -e httpd . -p3001 &
 	# python -m SimpleHTTPServer 3001
